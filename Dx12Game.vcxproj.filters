@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="engine\IFramework.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\Helper.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\directX\DescriptorHeap.cpp">
+      <Filter>engine\directX</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\directX\DirectXBase.cpp">
+      <Filter>engine\directX</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\directX\DirectXCommon.cpp">
+      <Filter>engine\directX</Filter>
+    </ClCompile>
+    <ClCompile Include="math\EulerAngle.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\MathUtil.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Matrix3.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Matrix4.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Quaternion.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Random.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Vector2.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Vector3.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Vector4.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\input\InputBase.cpp">
+      <Filter>engine\input</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\graphics\Texture.cpp" />
+    <ClCompile Include="engine\graphics\ResourceMgr.cpp" />
+    <ClCompile Include="engine\graphics\SpriteBase.cpp" />
+    <ClCompile Include="engine\directX\PipelineState.cpp" />
+    <ClCompile Include="engine\graphics\Camera.cpp" />
+    <ClCompile Include="engine\graphics\Sprite.cpp" />
+    <ClCompile Include="engine\directX\Buffer.cpp" />
+    <ClCompile Include="engine\graphics\ModelBase.cpp" />
+    <ClCompile Include="engine\graphics\ModelCamera.cpp" />
+    <ClCompile Include="engine\graphics\Model.cpp" />
+    <ClCompile Include="engine\Window.cpp" />
+    <ClCompile Include="game\Game.cpp" />
+    <ClCompile Include="game\GameScene.cpp" />
+    <ClCompile Include="engine\graphics\LineRenderer.cpp" />
+    <ClCompile Include="game\Course.cpp" />
+    <ClCompile Include="game\Player.cpp" />
+    <ClCompile Include="game\Transform.cpp" />
+    <ClCompile Include="engine\graphics\RenderTexture.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="engine\Helper.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\IFramework.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\directX\DescriptorHeap.h">
+      <Filter>engine\directX</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\directX\DirectXBase.h">
+      <Filter>engine\directX</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\directX\DirectXCommon.h">
+      <Filter>engine\directX</Filter>
+    </ClInclude>
+    <ClInclude Include="math\EulerAngle.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\MathUtil.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Matrix3.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Matrix4.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Quaternion.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Random.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Rect.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Vector2.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Vector3.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Vector4.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\input\InputBase.h">
+      <Filter>engine\input</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\Texture.h" />
+    <ClInclude Include="engine\graphics\ResourceMgr.h" />
+    <ClInclude Include="engine\graphics\SpriteBase.h" />
+    <ClInclude Include="engine\directX\PipelineState.h" />
+    <ClInclude Include="engine\graphics\Camera.h" />
+    <ClInclude Include="engine\graphics\BlendMode.h" />
+    <ClInclude Include="engine\graphics\Sprite.h" />
+    <ClInclude Include="engine\directX\Buffer.h" />
+    <ClInclude Include="engine\graphics\ModelBase.h" />
+    <ClInclude Include="engine\graphics\ModelCamera.h" />
+    <ClInclude Include="engine\graphics\PSOFlags.h" />
+    <ClInclude Include="engine\graphics\Model.h" />
+    <ClInclude Include="engine\Window.h" />
+    <ClInclude Include="game\Game.h" />
+    <ClInclude Include="engine\scene\IScene.h" />
+    <ClInclude Include="game\GameScene.h" />
+    <ClInclude Include="engine\graphics\LineRenderer.h" />
+    <ClInclude Include="game\Course.h" />
+    <ClInclude Include="game\Player.h" />
+    <ClInclude Include="game\Transform.h" />
+    <ClInclude Include="engine\graphics\RenderTexture.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="engine">
+      <UniqueIdentifier>{2470debf-5a24-4291-aba1-040116056d8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\directX">
+      <UniqueIdentifier>{2cdc5cf5-e545-4717-b8b5-30adb49b20a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{29627630-50a6-476d-b8d3-78feba55a7b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\input">
+      <UniqueIdentifier>{39279560-d03b-4318-8aea-6df82c156ced}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\shaders\Sprite.hlsli" />
+    <None Include="resources\shaders\Model.hlsli" />
+    <None Include="resources\shaders\Primitive.hlsli" />
+    <None Include="resources\shaders\CopyImage.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="resources\shaders\SpriteVS.hlsl" />
+    <FxCompile Include="resources\shaders\SpritePS.hlsl" />
+    <FxCompile Include="resources\shaders\ModelVS.hlsl" />
+    <FxCompile Include="resources\shaders\ModelPS.hlsl" />
+    <FxCompile Include="resources\shaders\SkinModelVS.hlsl" />
+    <FxCompile Include="resources\shaders\NoTextureModelPS.hlsl" />
+    <FxCompile Include="resources\shaders\PrimitiveVS.hlsl" />
+    <FxCompile Include="resources\shaders\PrimitivePS.hlsl" />
+    <FxCompile Include="resources\shaders\CopyImageVS.hlsl" />
+    <FxCompile Include="resources\shaders\CopyImagePS.hlsl" />
+    <FxCompile Include="resources\shaders\CathodeRayTubePS.hlsl" />
+  </ItemGroup>
+</Project>
