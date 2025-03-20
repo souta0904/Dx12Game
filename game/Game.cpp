@@ -58,8 +58,9 @@ void Game::Update() {
 	// デルタタイム計算
 	std::chrono::steady_clock::time_point currTime = std::chrono::steady_clock::now();
 	std::chrono::microseconds duration = std::chrono::duration_cast<std::chrono::microseconds>(currTime - mPrevTime);
-	mDeltaTime = static_cast<float>(duration.count()) * 0.000001f;
+	mDeltaTime = static_cast<float>(duration.count()) / 1000000.0f;
 	mDeltaTime = MathUtil::Min(mDeltaTime, 0.05f);
+	mPrevTime = currTime;
 	// シーン更新
 	if (mCurrScene) {
 		mCurrScene->Update(mInput.get(), mDeltaTime);

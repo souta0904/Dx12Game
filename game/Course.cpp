@@ -3,103 +3,29 @@
 #include "graphics/LineRenderer.h"
 #include <algorithm>
 
-void Course::Create() {
-	mSectionNum = static_cast<uint32_t>(mControlPoints.size()) - 1;
-	for (uint32_t section = 0; section < GetSectionNum(); ++section) {
-		// 1区間で20分割
-		uint32_t kDivNum = 30;
-		for (uint32_t i = 0; i < kDivNum - 1; ++i) {
-			Info curr = GetInfoAtT(section, static_cast<float>(i) / kDivNum);
-			Info next = GetInfoAtT(section, static_cast<float>(i + 0.25f) / kDivNum);
-			Line line = { curr.mPosition, next.mPosition };
-			mLines.emplace_back(line);
-		}
-		if (section < mSectionNum - 1) {
-			Info curr = GetInfoAtT(section, static_cast<float>(kDivNum - 1) / kDivNum);
-			Info next = GetInfoAtT(section, static_cast<float>(kDivNum - 0.75f) / kDivNum);
-			Line line = { curr.mPosition, next.mPosition };
-			mLines.emplace_back(line);
-		}
-
-		for (uint32_t i = 0; i < kDivNum - 1; ++i) {
-			Info curr = GetInfoAtT(section, static_cast<float>(i) / kDivNum);
-			Info next = GetInfoAtT(section, static_cast<float>(i + 1) / kDivNum);
-			Vector3 offset = Vector3(cosf(MathUtil::kPiOver2) * curr.mRadius, sinf(MathUtil::kPiOver2) * curr.mRadius, 0.0f);
-			Vector3 nextOffset = Vector3(cosf(MathUtil::kPiOver2) * next.mRadius, sinf(MathUtil::kPiOver2) * next.mRadius, 0.0f);
-			Line line = { curr.mPosition + offset * curr.mRotate, next.mPosition + nextOffset * next.mRotate };
-			mLinesUp.emplace_back(line);
-		}
-		if (section < mSectionNum - 1) {
-			Info curr = GetInfoAtT(section, static_cast<float>(kDivNum - 1) / kDivNum);
-			Info next = GetInfoAtT(section + 1, 0.0f);
-			Vector3 offset = Vector3(cosf(MathUtil::kPiOver2) * curr.mRadius, sinf(MathUtil::kPiOver2) * curr.mRadius, 0.0f);
-			Vector3 nextOffset = Vector3(cosf(MathUtil::kPiOver2) * next.mRadius, sinf(MathUtil::kPiOver2) * next.mRadius, 0.0f);
-			Line line = { curr.mPosition + offset * curr.mRotate, next.mPosition + nextOffset * next.mRotate };
-			mLinesUp.emplace_back(line);
-		}
-
-		for (uint32_t i = 0; i < kDivNum - 1; ++i) {
-			Info curr = GetInfoAtT(section, static_cast<float>(i) / kDivNum);
-			Info next = GetInfoAtT(section, static_cast<float>(i + 1) / kDivNum);
-			Vector3 offset = Vector3(cosf(-MathUtil::kPiOver2) * curr.mRadius, sinf(-MathUtil::kPiOver2) * curr.mRadius, 0.0f);
-			Vector3 nextOffset = Vector3(cosf(-MathUtil::kPiOver2) * next.mRadius, sinf(-MathUtil::kPiOver2) * next.mRadius, 0.0f);
-			Line line = { curr.mPosition + offset * curr.mRotate, next.mPosition + nextOffset * next.mRotate };
-			mLinesDown.emplace_back(line);
-		}
-		if (section < mSectionNum - 1) {
-			Info curr = GetInfoAtT(section, static_cast<float>(kDivNum - 1) / kDivNum);
-			Info next = GetInfoAtT(section + 1, 0.0f);
-			Vector3 offset = Vector3(cosf(-MathUtil::kPiOver2) * curr.mRadius, sinf(-MathUtil::kPiOver2) * curr.mRadius, 0.0f);
-			Vector3 nextOffset = Vector3(cosf(-MathUtil::kPiOver2) * next.mRadius, sinf(-MathUtil::kPiOver2) * next.mRadius, 0.0f);
-			Line line = { curr.mPosition + offset * curr.mRotate, next.mPosition + nextOffset * next.mRotate };
-			mLinesDown.emplace_back(line);
-		}
-
-		for (uint32_t i = 0; i < kDivNum - 1; ++i) {
-			Info curr = GetInfoAtT(section, static_cast<float>(i) / kDivNum);
-			Info next = GetInfoAtT(section, static_cast<float>(i + 1) / kDivNum);
-			Vector3 offset = Vector3(cosf(-MathUtil::kPi) * curr.mRadius, sinf(-MathUtil::kPi) * curr.mRadius, 0.0f);
-			Vector3 nextOffset = Vector3(cosf(-MathUtil::kPi) * next.mRadius, sinf(-MathUtil::kPi) * next.mRadius, 0.0f);
-			Line line = { curr.mPosition + offset * curr.mRotate, next.mPosition + nextOffset * next.mRotate };
-			mLinesLeft.emplace_back(line);
-		}
-		if (section < mSectionNum - 1) {
-			Info curr = GetInfoAtT(section, static_cast<float>(kDivNum - 1) / kDivNum);
-			Info next = GetInfoAtT(section + 1, 0.0f);
-			Vector3 offset = Vector3(cosf(-MathUtil::kPi) * curr.mRadius, sinf(-MathUtil::kPi) * curr.mRadius, 0.0f);
-			Vector3 nextOffset = Vector3(cosf(-MathUtil::kPi) * next.mRadius, sinf(-MathUtil::kPi) * next.mRadius, 0.0f);
-			Line line = { curr.mPosition + offset * curr.mRotate, next.mPosition + nextOffset * next.mRotate };
-			mLinesLeft.emplace_back(line);
-		}
-
-		for (uint32_t i = 0; i < kDivNum - 1; ++i) {
-			Info curr = GetInfoAtT(section, static_cast<float>(i) / kDivNum);
-			Info next = GetInfoAtT(section, static_cast<float>(i + 1) / kDivNum);
-			Vector3 offset = Vector3(cosf(0.0f) * curr.mRadius, sinf(0.0f) * curr.mRadius, 0.0f);
-			Vector3 nextOffset = Vector3(cosf(0.0f) * next.mRadius, sinf(0.0f) * next.mRadius, 0.0f);
-			Line line = { curr.mPosition + offset * curr.mRotate, next.mPosition + nextOffset * next.mRotate };
-			mLinesRight.emplace_back(line);
-		}
-		if (section < mSectionNum - 1) {
-			Info curr = GetInfoAtT(section, static_cast<float>(kDivNum - 1) / kDivNum);
-			Info next = GetInfoAtT(section + 1, 0.0f);
-			Vector3 offset = Vector3(cosf(0.0f) * curr.mRadius, sinf(0.0f) * curr.mRadius, 0.0f);
-			Vector3 nextOffset = Vector3(cosf(0.0f) * next.mRadius, sinf(0.0f) * next.mRadius, 0.0f);
-			Line line = { curr.mPosition + offset * curr.mRotate, next.mPosition + nextOffset * next.mRotate };
-			mLinesRight.emplace_back(line);
-		}
+// 始点と終点から向きを計算
+Quaternion Course::CalcDirection(const Vector3& start, const Vector3& end) {
+	Quaternion result = {};
+	Vector3 direction = end - start;// 向き
+	if (Length(direction) > 0.001f) {
+		direction.Normalize();
 	}
+	Vector3 up = Cross(Vector3::kUnitZ, direction);
+	if (Length(up) > 0.001f) {
+		result = Quaternion(Normalize(up), acosf(Dot(Vector3::kUnitZ, direction)));
+	}
+	return result;
 }
 
-// ある区間のtにおける情報を計算
-Course::Info Course::GetInfoAtT(uint32_t section, float t) {
+Course::CenterInfo Course::GetCenterInfo(uint32_t section, float t) {
+	CenterInfo result = {};
 	ControlPoint p0, p1, p2, p3;
 	section = MathUtil::Clamp<uint32_t>(section, 0, mSectionNum - 1);
-	if (section <= 0) {// 最初の区間
+	if (section <= 0) {// 最初の区間の場合
 		p0 = p1 = mControlPoints[section];
 		p2 = mControlPoints[section + 1];
 		p3 = mControlPoints[section + 2];
-	} else if (section >= mSectionNum - 1) {// 最後の区間
+	} else if (section >= mSectionNum - 1) {// 最後の区間の場合
 		p0 = mControlPoints[section - 1];
 		p1 = mControlPoints[section];
 		p2 = p3 = mControlPoints[section + 1];
@@ -109,40 +35,64 @@ Course::Info Course::GetInfoAtT(uint32_t section, float t) {
 		p2 = mControlPoints[section + 1];
 		p3 = mControlPoints[section + 2];
 	}
-	Info result;
+	// 座標、半径の計算
 	result.mPosition = CatmullRom(p0.mPosition, p1.mPosition, p2.mPosition, p3.mPosition, t);
 	result.mRadius = CatmullRom(p0.mRadius, p1.mRadius, p2.mRadius, p3.mRadius, t);
-
-	// 回転の計算
-	float nextT = MathUtil::Min(t + 0.001f, 1.0f);
-	Vector3 nextPos = CatmullRom(p0.mPosition, p1.mPosition, p2.mPosition, p3.mPosition, nextT);
-	Vector3 dir = nextPos - result.mPosition;
-	if (Length(dir) > 0.001f) {
-		dir.Normalize();
-	}
-	Vector3 cross = Cross(Vector3::kUnitZ, dir);
-	if (Length(cross) > 0.001f) {
-		result.mRotate = Quaternion(Normalize(cross), acosf(Dot(Vector3::kUnitZ, dir)));
-	}
-
+	// 今の点と少し先の点から姿勢を計算
+	float deltaT = 0.001f;// 少し先
+	float nextT = MathUtil::Min(t + deltaT, 1.0f);
+	Vector3 nextPosition = CatmullRom(p0.mPosition, p1.mPosition, p2.mPosition, p3.mPosition, nextT);// 少し先の座標
+	result.mRotate = CalcDirection(result.mPosition, nextPosition);
 	return result;
+}
+
+Course::CircumferenceInfo Course::GetCircumferenceInfo(uint32_t section, float t, float angle) {
+	CircumferenceInfo result = {};
+	CenterInfo centerInfo = GetCenterInfo(section, t);
+	result.mPosition = centerInfo.mPosition + Vector3(cosf(angle) * centerInfo.mRadius, sinf(angle) * centerInfo.mRadius, 0.0f) * centerInfo.mRotate;
+	// 今の点と少し先の点から姿勢を計算
+	float deltaT = 0.001f;// 少し先
+	float nextT = MathUtil::Min(t + deltaT, 1.0f);
+	CenterInfo nextCenterInfo = GetCenterInfo(section, nextT);
+	Vector3 nextPosition = nextCenterInfo.mPosition + Vector3(cosf(angle) * nextCenterInfo.mRadius, sinf(angle) * nextCenterInfo.mRadius, 0.0f) * nextCenterInfo.mRotate;
+	result.mRotate = CalcDirection(result.mPosition, nextPosition);
+	return result;
+}
+
+void Course::Create() {
+	// 1区間の分割数
+	const uint32_t kDivNum = 20;
+
+	mSectionNum = static_cast<uint32_t>(mControlPoints.size()) - 1;
+	for (uint32_t section = 0; section < GetSectionNum(); ++section) {
+		// 中心線
+		for (uint32_t i = 0; i < kDivNum; ++i) {
+			CenterInfo currInfo = GetCenterInfo(section, static_cast<float>(i) / kDivNum);
+			CenterInfo nextInfo = GetCenterInfo(section, (i + 0.25f) / kDivNum);// 長さ1/4の点線
+			LinePosition line = { currInfo.mPosition, nextInfo.mPosition };
+			mCenterLine.emplace_back(line);
+		}
+		// 上下左右の線
+		float angles[] = { MathUtil::kPiOver2,-MathUtil::kPiOver2,MathUtil::kPi,0.0f };
+		for (uint32_t i = 0; i < 4; ++i) {
+			for (uint32_t j = 0; j < kDivNum - 1; ++j) {
+				CircumferenceInfo currInfo = GetCircumferenceInfo(section, static_cast<float>(j) / kDivNum, angles[i]);
+				mLinePoints[i].emplace_back(currInfo.mPosition);
+			}
+		}
+	}
 }
 
 void Course::DrawPrimitive() {
 	LineRenderer& pr = LineRenderer::GetInstance();
-	for (uint32_t i = 0; i < mLines.size(); ++i) {
-		pr.DrawLine3(mLines[i].mStart, mLines[i].mEnd);
+	// 中心線
+	for (uint32_t i = 0; i < mCenterLine.size(); ++i) {
+		pr.DrawLine3(mCenterLine[i].mStart, mCenterLine[i].mEnd);
 	}
-	for (uint32_t i = 0; i < mLinesUp.size(); ++i) {
-		pr.DrawLine3(mLinesUp[i].mStart, mLinesUp[i].mEnd);
-	}
-	for (uint32_t i = 0; i < mLinesDown.size(); ++i) {
-		pr.DrawLine3(mLinesDown[i].mStart, mLinesDown[i].mEnd);
-	}
-	for (uint32_t i = 0; i < mLinesLeft.size(); ++i) {
-		pr.DrawLine3(mLinesLeft[i].mStart, mLinesLeft[i].mEnd);
-	}
-	for (uint32_t i = 0; i < mLines.size(); ++i) {
-		pr.DrawLine3(mLinesRight[i].mStart, mLinesRight[i].mEnd);
+	// 上下左右の線
+	for (uint32_t i = 0; i < 4; ++i) {
+		for (uint32_t j = 0; j < mLinePoints[i].size() - 1; ++j) {
+			pr.DrawLine3(mLinePoints[i][j], mLinePoints[i][j + 1]);
+		}
 	}
 }

@@ -20,7 +20,7 @@ void GameScene::Initialize() {
 	// プレイヤー
 	mPlayer = std::make_unique<Player>();
 	mPlayer->Initialize();
-	mPlayer->SetRing(mCourse.get());
+	mPlayer->SetCource(mCourse.get());
 }
 
 void GameScene::Terminate() {
