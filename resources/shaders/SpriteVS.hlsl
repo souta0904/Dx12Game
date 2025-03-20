@@ -9,7 +9,7 @@ struct VSInput
 VSOutput main(VSInput input)
 {
     VSOutput output;
-    output.mSVPosition = mul(input.mPosition, gSprite.mWVPMat);
+    output.mSVPosition = mul(input.mPosition, gConstant.mWVPMat);
     output.mUV = input.mUV;
     return output;
 }

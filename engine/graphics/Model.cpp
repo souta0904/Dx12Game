@@ -70,7 +70,7 @@ bool Model::Create(const std::string& path) {
 
 	// ノードを構築
 	mRootIdx = CreateNode(mAssimpScene->mRootNode, {});
-	bool isOutput = false;
+	bool isOutput = true;
 	if (isOutput) {
 		Helper::Log(std::format("'{}'\n", mPath));
 		Output(&mSrcNodes[mRootIdx]);// デバッグ用

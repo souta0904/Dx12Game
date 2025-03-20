@@ -23,19 +23,19 @@ struct SkinnedVertex
 };
 
 ConstantBuffer<TransformationMatrix> gTransformationMatrix : register(b0);
-StructuredBuffer<float32_t4x4> gPalette : register(t0);
+StructuredBuffer<float32_t4x4> gMatPalette : register(t0);
 
 SkinnedVertex CalcSkinning(VSInput input)
 {
     SkinnedVertex output;
-    output.mPosition = mul(input.mPosition, gPalette[input.mBoneIndices.x]) * input.mWeights.x;
-    output.mPosition += mul(input.mPosition, gPalette[input.mBoneIndices.y]) * input.mWeights.y;
-    output.mPosition += mul(input.mPosition, gPalette[input.mBoneIndices.z]) * input.mWeights.z;
-    output.mPosition += mul(input.mPosition, gPalette[input.mBoneIndices.w]) * input.mWeights.w;
-    output.mNormal = mul(input.mNormal, (float32_t3x3) gPalette[input.mBoneIndices.x]) * input.mWeights.x;
-    output.mNormal += mul(input.mNormal, (float32_t3x3) gPalette[input.mBoneIndices.y]) * input.mWeights.y;
-    output.mNormal += mul(input.mNormal, (float32_t3x3) gPalette[input.mBoneIndices.z]) * input.mWeights.z;
-    output.mNormal += mul(input.mNormal, (float32_t3x3) gPalette[input.mBoneIndices.w]) * input.mWeights.w;
+    output.mPosition = mul(input.mPosition, gMatPalette[input.mBoneIndices.x]) * input.mWeights.x;
+    output.mPosition += mul(input.mPosition, gMatPalette[input.mBoneIndices.y]) * input.mWeights.y;
+    output.mPosition += mul(input.mPosition, gMatPalette[input.mBoneIndices.z]) * input.mWeights.z;
+    output.mPosition += mul(input.mPosition, gMatPalette[input.mBoneIndices.w]) * input.mWeights.w;
+    output.mNormal = mul(input.mNormal, (float32_t3x3) gMatPalette[input.mBoneIndices.x]) * input.mWeights.x;
+    output.mNormal += mul(input.mNormal, (float32_t3x3) gMatPalette[input.mBoneIndices.y]) * input.mWeights.y;
+    output.mNormal += mul(input.mNormal, (float32_t3x3) gMatPalette[input.mBoneIndices.z]) * input.mWeights.z;
+    output.mNormal += mul(input.mNormal, (float32_t3x3) gMatPalette[input.mBoneIndices.w]) * input.mWeights.w;
     return output;
 }
 
