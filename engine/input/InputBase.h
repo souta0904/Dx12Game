@@ -16,25 +16,25 @@ public:
 	void Update();
 
 	// キーボード
-	bool GetKey(uint8_t keyCode) const;// 押している
-	bool GetKeyUp(uint8_t keyCode) const;// 離した
-	bool GetKeyDown(uint8_t keyCode) const;// 押した
+	bool GetKey(uint8_t keyCode) const;
+	bool GetKeyUp(uint8_t keyCode) const;
+	bool GetKeyDown(uint8_t keyCode) const;
 	// マウス
-	bool GetMouseButton(uint8_t button) const;// 押している
-	bool GetMouseButtonUp(uint8_t button) const;// 離した
-	bool GetMouseButtonDown(uint8_t button) const;// 押した
+	bool GetMouseButton(uint8_t button) const;
+	bool GetMouseButtonUp(uint8_t button) const;
+	bool GetMouseButtonDown(uint8_t button) const;
 	const Vector2& GetMouseMovement() const { return mMouseMovement; }
 	float GetMouseWheel() const { return mMouseWheel; }
 	const Vector2& GetMousePosition() const { return mMousePosition; }
 	// パッド
-	bool IsPadConnected() const { return mIsPadConnected; }
-	bool GetPadButton(int button) const;// 押している
-	bool GetPadButtonUp(int button) const;// 離した
-	bool GetPadButtonDown(int button) const;// 押した
+	bool GetPadButton(int button) const;
+	bool GetPadButtonUp(int button) const;
+	bool GetPadButtonDown(int button) const;
 	const Vector2& GetLeftStick() const { return mLeftStick; }
 	const Vector2& GetRightStick() const { return mRightStick; }
 	float GetLeftTrigger() const { return mLeftTrigger; }
 	float GetRightTrigger() const { return mRightTrigger; }
+	bool IsPadConnected() const { return mIsPadConnected; }
 	void SetLeftStickDeadZone(float deadZone) { mLeftStickDeadZone = deadZone; }
 	void SetRightStickDeadZone(float deadZone) { mRightStickDeadZone = deadZone; }
 	void SetTriggerDeadZone(float deadZone) { mTriggerDeadZone = deadZone; }
@@ -61,13 +61,13 @@ private:
 	float mMouseWheel;// ホイール
 	Vector2 mMousePosition;// 座標
 	// パッド
-	bool mIsPadConnected;// 接続されているか
 	WORD mCurrPadButton;
 	WORD mPrevPadButton;
 	Vector2 mLeftStick;// 左スティック
 	Vector2 mRightStick;// 右スティック
 	float mLeftTrigger;// 左トリガー
 	float mRightTrigger;// 右トリガー
+	bool mIsPadConnected;// 接続されているか
 	// デッドゾーン
 	float mLeftStickDeadZone = XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE;
 	float mRightStickDeadZone = XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE;

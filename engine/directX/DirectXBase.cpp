@@ -10,6 +10,8 @@
 #pragma comment(lib, "dxguid.lib")
 
 void DirectXBase::Initialize() {
+	DirectXCommon::Initialize();
+
 #ifdef _DEBUG
 	// デバッグレイヤーを有効化
 	Microsoft::WRL::ComPtr<ID3D12Debug1> debug = nullptr;
@@ -153,6 +155,7 @@ void DirectXBase::Terminate() {
 	for (auto dh : mRTVs) {
 		mRTVHeap->Free(dh);
 	}
+	DirectXCommon::Terminate();
 }
 
 // フレームの開始

@@ -20,5 +20,5 @@ private:
 	float mSpeed;
 	float mRadian;
 	float mAngle;
-	std::unique_ptr<Model> mModel;
+	std::unique_ptr<ModelInstance> mModel;
 };

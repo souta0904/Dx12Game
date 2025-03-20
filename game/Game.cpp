@@ -18,21 +18,22 @@ void Game::Initialize() {
 	mSceneRT->Create(window.GetClientWidth(), window.GetClientHeight(), true);
 	// CRTポストエフェクト
 	mCRT_RS = std::make_unique<RootSignature>(2, 1);
-	mCRT_RS->Param(0).InitDescriptorTable(1, D3D12_SHADER_VISIBILITY_PIXEL);
-	mCRT_RS->Param(0).InitDescriptorRange(0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-	mCRT_RS->Param(1).InitCBV(0, D3D12_SHADER_VISIBILITY_ALL);
-	mCRT_RS->Sampler(0) = DirectXCommon::gSamplerLinearWrap;
+	mCRT_RS->GetParameter(0).InitDescriptorTable(1, D3D12_SHADER_VISIBILITY_PIXEL);
+	mCRT_RS->GetParameter(0).InitDescriptorRange(0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+	mCRT_RS->GetParameter(1).InitCBV(0, D3D12_SHADER_VISIBILITY_ALL);
+	mCRT_RS->GetSampler(0) = DirectXCommon::gSamplerLinearWrap;
 	mCRT_RS->Create();
-	mCRT_PS = std::make_unique<PipelineState>();
-	mCRT_PS->SetRootSignature(mCRT_RS.get());
+	PSOInit init;
+	init.mRootSignature = mCRT_RS.get();
 	ResourceMgr& resourceMgr = ResourceMgr::GetInstance();
-	mCRT_PS->SetVertexShader(resourceMgr.GetShader("resources/shaders/CopyImageVS.hlsl", "vs_6_0"));
-	mCRT_PS->SetPixelShader(resourceMgr.GetShader("resources/shaders/CathodeRayTubePS.hlsl", "ps_6_0"));
-	mCRT_PS->SetBlendState(DirectXCommon::gBlendNone);
-	mCRT_PS->SetRasterizerState(DirectXCommon::gRasterizerCullModeNone);
-	mCRT_PS->SetDepthStencilState(DirectXCommon::gDepthDisable);
-	mCRT_PS->SetPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
-	mCRT_PS->Create();
+	init.mVertexShader = resourceMgr.GetShader("resources/shaders/CopyImageVS.hlsl", "vs_6_0");
+	init.mPixelShader = resourceMgr.GetShader("resources/shaders/CopyImagePS.hlsl", "ps_6_0");
+	init.mBlendDesc = DirectXCommon::gBlendNone;
+	init.mRasterizerDesc = DirectXCommon::gRasterizerCullModeNone;
+	init.mDepthStencilDesc = DirectXCommon::gDepthDisable;
+	init.mPrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	mCRT_PS = std::make_unique<PipelineState>();
+	mCRT_PS->Create(init);
 	mCRT_CB = std::make_unique<ConstantBuffer>();
 	mCRT_CB->Create(sizeof(float));
 

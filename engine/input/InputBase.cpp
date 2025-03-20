@@ -74,7 +74,7 @@ void InputBase::Update() {
 	if (result == ERROR_SUCCESS) {
 		mIsPadConnected = true;
 		mCurrPadButton = xinputState.Gamepad.wButtons;
-		// スティックとトリガーの正規化
+		// スティックとトリガーを正規化
 		mLeftStick = NormalizeStick(xinputState.Gamepad.sThumbLX, xinputState.Gamepad.sThumbLY, mLeftStickDeadZone);
 		mRightStick = NormalizeStick(xinputState.Gamepad.sThumbRX, xinputState.Gamepad.sThumbRY, mRightStickDeadZone);
 		mLeftTrigger = NormalizeTrigger(xinputState.Gamepad.bLeftTrigger, mTriggerDeadZone);
@@ -108,53 +108,44 @@ float InputBase::NormalizeTrigger(uint8_t input, float deadZone) {
 	return normalize;
 }
 
-// キーを押しているか
 bool InputBase::GetKey(uint8_t keyCode) const {
 	assert(keyCode >= 0 && keyCode < _countof(mCurrKeys));
 	return mCurrKeys[keyCode] & 0x80;
 }
 
-// キーを離したか
 bool InputBase::GetKeyUp(uint8_t keyCode) const {
 	assert(keyCode >= 0 && keyCode < _countof(mCurrKeys));
 	return !(mCurrKeys[keyCode] & 0x80) && mPrevKeys[keyCode] & 0x80;
 }
 
-// キーを押したか
 bool InputBase::GetKeyDown(uint8_t keyCode) const {
 	assert(keyCode >= 0 && keyCode < _countof(mCurrKeys));
 	return mCurrKeys[keyCode] & 0x80 && !(mPrevKeys[keyCode] & 0x80);
 }
 
-// マウスのボタンを押しているか
 bool InputBase::GetMouseButton(uint8_t button) const {
 	assert(button >= 0 && button < _countof(mCurrMouseButtons));
 	return mCurrMouseButtons[button] & 0x80;
 }
 
-// マウスのボタンを離したか
 bool InputBase::GetMouseButtonUp(uint8_t button) const {
 	assert(button >= 0 && button < _countof(mCurrMouseButtons));
 	return mCurrMouseButtons[button] & 0x80 && !(mPrevMouseButtons[button] & 0x80);
 }
 
-// マウスのボタンを押したか
 bool InputBase::GetMouseButtonDown(uint8_t button) const {
 	assert(button >= 0 && button < _countof(mCurrMouseButtons));
 	return !(mCurrMouseButtons[button] & 0x80) && mPrevMouseButtons[button] & 0x80;
 }
 
-// パッドのボタンを押しているか
 bool InputBase::GetPadButton(int button) const {
 	return mCurrPadButton & button;
 }
 
-// パッドのボタンを離したか
 bool InputBase::GetPadButtonUp(int button) const {
 	return !(mCurrPadButton & button) && mPrevPadButton & button;
 }
 
-// パッドのボタンを押したか
 bool InputBase::GetPadButtonDown(int button) const {
 	return mCurrPadButton & button && !(mPrevPadButton & button);
 }

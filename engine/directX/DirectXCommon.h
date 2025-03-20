@@ -1,9 +1,10 @@
 #pragma once
 #include <d3d12.h>
 
+// DirectX共通
 namespace DirectXCommon {
 
-	// ヒープ設定
+	// ヒーププロパティ
 	extern D3D12_HEAP_PROPERTIES gHeapDefault;
 	extern D3D12_HEAP_PROPERTIES gHeapUpload;
 
@@ -28,5 +29,8 @@ namespace DirectXCommon {
 	// サンプラー
 	extern D3D12_STATIC_SAMPLER_DESC gSamplerLinearWrap;
 	extern D3D12_STATIC_SAMPLER_DESC gSamplerLinearClamp;
+
+	void Initialize();
+	void Terminate();
 
 }

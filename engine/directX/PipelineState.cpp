@@ -1,71 +1,80 @@
 #include "PipelineState.h"
 #include "DirectXBase.h"
+#include "graphics/ResourceMgr.h"
 #include <cassert>
 
+// ルートパラメータ
 RootParameter::~RootParameter() {
-	if (mRootParam.ParameterType == D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE) {
-		delete[] mRootParam.DescriptorTable.pDescriptorRanges;
+	if (mRootParameter.ParameterType == D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE) {
+		delete[] mRootParameter.DescriptorTable.pDescriptorRanges;
 	}
 }
 
+// 定数バッファビューとして初期化
 void RootParameter::InitCBV(uint32_t registerNum, D3D12_SHADER_VISIBILITY shaderVisibility) {
-	mRootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	mRootParam.Constants.ShaderRegister = registerNum;
-	mRootParam.Constants.RegisterSpace = 0;
-	mRootParam.Constants.Num32BitValues = 0;
-	mRootParam.ShaderVisibility = shaderVisibility;
+	mRootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	mRootParameter.Constants.ShaderRegister = registerNum;
+	mRootParameter.Constants.RegisterSpace = 0;
+	mRootParameter.Constants.Num32BitValues = 0;
+	mRootParameter.ShaderVisibility = shaderVisibility;
 }
 
+// デスクリプタヒープとして初期化
 void RootParameter::InitDescriptorTable(uint32_t rangeNum, D3D12_SHADER_VISIBILITY shaderVisibility) {
-	mRootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	mRootParam.DescriptorTable.NumDescriptorRanges = rangeNum;
-	mRootParam.DescriptorTable.pDescriptorRanges = new D3D12_DESCRIPTOR_RANGE[rangeNum];
-	mRootParam.ShaderVisibility = shaderVisibility;
+	mRootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	mRootParameter.DescriptorTable.NumDescriptorRanges = rangeNum;
+	mRootParameter.DescriptorTable.pDescriptorRanges = new D3D12_DESCRIPTOR_RANGE[rangeNum];
+	mRootParameter.ShaderVisibility = shaderVisibility;
 }
 
-void RootParameter::InitDescriptorRange(uint32_t idx, D3D12_DESCRIPTOR_RANGE_TYPE rangeType, uint32_t numDescs, uint32_t registerNum) {
-	D3D12_DESCRIPTOR_RANGE* range = const_cast<D3D12_DESCRIPTOR_RANGE*>(&mRootParam.DescriptorTable.pDescriptorRanges[idx]);
+// デスクリプタレンジを初期化
+void RootParameter::InitDescriptorRange(uint32_t idx, D3D12_DESCRIPTOR_RANGE_TYPE rangeType, uint32_t descNum, uint32_t baseRegisterNum) {
+	D3D12_DESCRIPTOR_RANGE* range = const_cast<D3D12_DESCRIPTOR_RANGE*>(&mRootParameter.DescriptorTable.pDescriptorRanges[idx]);
 	range->RangeType = rangeType;
-	range->NumDescriptors = numDescs;
-	range->BaseShaderRegister = registerNum;
+	range->NumDescriptors = descNum;
+	range->BaseShaderRegister = baseRegisterNum;
 	range->RegisterSpace = 0;
 	range->OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 }
 
-RootSignature::RootSignature(uint32_t numParams, uint32_t numSamplers) {
-	mNumParams = numParams;
-	if (mNumParams > 0) {
-		mParams.reset(new RootParameter[mNumParams]);
+// ルートシグネチャ
+RootSignature::RootSignature(uint32_t parameterNum, uint32_t samplerNum) {
+	mParameterNum = parameterNum;
+	if (mParameterNum > 0) {
+		mParameters.reset(new RootParameter[mParameterNum]);
 	}
-	mNumSamplers = numSamplers;
-	if (mNumSamplers > 0) {
-		mSamplers.reset(new D3D12_STATIC_SAMPLER_DESC[mNumSamplers]);
+	mSamplerNum = samplerNum;
+	if (mSamplerNum > 0) {
+		mSamplers.reset(new D3D12_STATIC_SAMPLER_DESC[mSamplerNum]);
 	}
 }
 
-RootParameter& RootSignature::Param(uint32_t idx) {
-	assert(idx >= 0 && idx < mNumParams);
-	return mParams[idx];
+// ルートパラメータにアクセス
+RootParameter& RootSignature::GetParameter(uint32_t idx) {
+	assert(idx >= 0 && idx < mParameterNum);
+	return mParameters[idx];
 }
 
-D3D12_STATIC_SAMPLER_DESC& RootSignature::Sampler(uint32_t idx) {
-	assert(idx >= 0 && idx < mNumSamplers);
+// サンプラーにアクセス
+D3D12_STATIC_SAMPLER_DESC& RootSignature::GetSampler(uint32_t idx) {
+	assert(idx >= 0 && idx < mSamplerNum);
 	return mSamplers[idx];
 }
 
 void RootSignature::Create() {
 	D3D12_ROOT_SIGNATURE_DESC desc = {};
 	desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-	desc.NumParameters = mNumParams;
-	if (mNumParams > 0) {
-		desc.pParameters = &(mParams[0].mRootParam);
+	desc.NumParameters = mParameterNum;
+	if (mParameterNum > 0) {
+		desc.pParameters = &(mParameters[0].mRootParameter);
 	}
-	desc.NumStaticSamplers = mNumSamplers;
+	desc.NumStaticSamplers = mSamplerNum;
 	desc.pStaticSamplers = mSamplers.get();
 	Microsoft::WRL::ComPtr<ID3DBlob> rsBlob = nullptr;
 	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;
 	HRESULT hr = D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1_0, &rsBlob, &errorBlob);
 	assert(SUCCEEDED(hr));
+	// ルートシグネチャの作成
 	hr = DirectXBase::GetInstance().GetDevice()->CreateRootSignature(0, rsBlob->GetBufferPointer(), rsBlob->GetBufferSize(), IID_PPV_ARGS(&mRootSignature));
 	assert(SUCCEEDED(hr));
 }
@@ -74,7 +83,9 @@ void RootSignature::Set(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> cmdLis
 	cmdList->SetGraphicsRootSignature(mRootSignature.Get());
 }
 
+// パイプラインステート
 PipelineState::PipelineState() {
+	// デフォルトの設定
 	mDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
 	mDesc.NumRenderTargets = 1;
 	mDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
@@ -82,65 +93,37 @@ PipelineState::PipelineState() {
 	mDesc.SampleDesc.Count = 1;
 }
 
-PipelineState::PipelineState(const PipelineState& ps) {
-	mDesc = ps.mDesc;
-	mInputLayouts = ps.mInputLayouts;
-	mDesc.InputLayout.pInputElementDescs = mInputLayouts.data();
+// コピー、代入の定義
+PipelineState::PipelineState(const PipelineState& pipelineState) {
+	*this = pipelineState;
 }
-
-PipelineState& PipelineState::operator=(const PipelineState& ps) {
-	mDesc = ps.mDesc;
-	mInputLayouts = ps.mInputLayouts;
+PipelineState& PipelineState::operator=(const PipelineState& pipelineState) {
+	mDesc = pipelineState.mDesc;
+	mInputLayouts = pipelineState.mInputLayouts;
 	mDesc.InputLayout.pInputElementDescs = mInputLayouts.data();
 	return *this;
 }
 
-void PipelineState::SetRootSignature(RootSignature* rs) {
-	if (rs) {
-		mDesc.pRootSignature = rs->GetRootSignature().Get();
-	}
-}
-
-void PipelineState::SetVertexShader(Microsoft::WRL::ComPtr<IDxcBlob> vs) {
-	assert(vs);
-	mDesc.VS.pShaderBytecode = vs->GetBufferPointer();
-	mDesc.VS.BytecodeLength = vs->GetBufferSize();
-}
-
-void PipelineState::SetPixelShader(Microsoft::WRL::ComPtr<IDxcBlob> ps) {
-	assert(ps);
-	mDesc.PS.pShaderBytecode = ps->GetBufferPointer();
-	mDesc.PS.BytecodeLength = ps->GetBufferSize();
-}
-
-void PipelineState::SetBlendState(D3D12_BLEND_DESC bs) {
-	mDesc.BlendState = bs;
-}
-
-void PipelineState::SetRasterizerState(D3D12_RASTERIZER_DESC rs) {
-	mDesc.RasterizerState = rs;
-}
-
-void PipelineState::SetDepthStencilState(D3D12_DEPTH_STENCIL_DESC dss) {
-	mDesc.DepthStencilState = dss;
-}
-
-void PipelineState::SetInputLayout(uint32_t num, const D3D12_INPUT_ELEMENT_DESC* descs) {
-	mDesc.InputLayout.NumElements = num;
-	if (num > 0) {
-		mInputLayouts.resize(num);
-		for (uint32_t i = 0; i < num; ++i) {
-			mInputLayouts[i] = descs[i];
-		}
+void PipelineState::Create(const PSOInit& init) {
+	mDesc.pRootSignature = init.mRootSignature->GetRootSignature().Get();
+	Microsoft::WRL::ComPtr<IDxcBlob> shaderBlob = init.mVertexShader->GetBlob();
+	mDesc.VS.pShaderBytecode = shaderBlob->GetBufferPointer();
+	mDesc.VS.BytecodeLength = shaderBlob->GetBufferSize();
+	shaderBlob = init.mPixelShader->GetBlob();
+	mDesc.PS.pShaderBytecode = shaderBlob->GetBufferPointer();
+	mDesc.PS.BytecodeLength = shaderBlob->GetBufferSize();
+	mDesc.BlendState = init.mBlendDesc;
+	mDesc.RasterizerState = init.mRasterizerDesc;
+	mDesc.DepthStencilState = init.mDepthStencilDesc;
+	mDesc.PrimitiveTopologyType = init.mPrimitiveTopologyType;
+	// 頂点レイアウト
+	uint32_t inputLayoutNum = static_cast<uint32_t>(init.mInputLayouts.size());
+	mDesc.InputLayout.NumElements = inputLayoutNum;
+	if (inputLayoutNum > 0) {
+		mInputLayouts = init.mInputLayouts;
 		mDesc.InputLayout.pInputElementDescs = mInputLayouts.data();
 	}
-}
-
-void PipelineState::SetPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE ptt) {
-	mDesc.PrimitiveTopologyType = ptt;
-}
-
-void PipelineState::Create() {
+	// パイプラインステートの作成
 	[[maybe_unused]] HRESULT hr = DirectXBase::GetInstance().GetDevice()->CreateGraphicsPipelineState(&mDesc, IID_PPV_ARGS(&mPipelineState));
 	assert(SUCCEEDED(hr));
 }

@@ -4,9 +4,10 @@
 #include "Quaternion.h"
 #include "Vector3.h"
 
+// 投影モード
 enum class ProjectionMode {
-	kOrthographic,
-	kPerspective
+	kOrthographic,	// 平行投影
+	kPerspective	// 透視投影
 };
 
 class Camera {
@@ -15,6 +16,7 @@ public:
 	const Matrix4& GetViewMat() const { return mViewMat; }
 	const Matrix4& GetProjectionMat() const { return mProjectionMat; }
 	const Matrix4& GetViewProjectionMat() const { return mViewProjectionMat; }
+
 public:
 	Quaternion mRotate;
 	Vector3 mTranslate;

@@ -4,48 +4,52 @@
 #include "ResourceMgr.h"
 
 void ModelBase::Initialize() {
-	mRootSignature = std::make_unique<RootSignature>(static_cast<uint32_t>(RootParamIdx::kMax), 1);
-	mRootSignature->Param(static_cast<uint32_t>(RootParamIdx::kTransformationMat)).InitCBV(0, D3D12_SHADER_VISIBILITY_VERTEX);
-	mRootSignature->Param(static_cast<uint32_t>(RootParamIdx::kMaterial)).InitCBV(0, D3D12_SHADER_VISIBILITY_PIXEL);
-	mRootSignature->Param(static_cast<uint32_t>(RootParamIdx::kTexture)).InitDescriptorTable(1, D3D12_SHADER_VISIBILITY_PIXEL);
-	mRootSignature->Param(static_cast<uint32_t>(RootParamIdx::kTexture)).InitDescriptorRange(0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-	mRootSignature->Param(static_cast<uint32_t>(RootParamIdx::kCamera)).InitCBV(1, D3D12_SHADER_VISIBILITY_PIXEL);
-	mRootSignature->Param(static_cast<uint32_t>(RootParamIdx::kLightCommon)).InitCBV(2, D3D12_SHADER_VISIBILITY_PIXEL);
-	mRootSignature->Param(static_cast<uint32_t>(RootParamIdx::kDirectionalLight)).InitDescriptorTable(1, D3D12_SHADER_VISIBILITY_PIXEL);
-	mRootSignature->Param(static_cast<uint32_t>(RootParamIdx::kDirectionalLight)).InitDescriptorRange(0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
-	mRootSignature->Param(static_cast<uint32_t>(RootParamIdx::kPointLight)).InitDescriptorTable(1, D3D12_SHADER_VISIBILITY_PIXEL);
-	mRootSignature->Param(static_cast<uint32_t>(RootParamIdx::kPointLight)).InitDescriptorRange(0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
-	mRootSignature->Param(static_cast<uint32_t>(RootParamIdx::kSpotLight)).InitDescriptorTable(1, D3D12_SHADER_VISIBILITY_PIXEL);
-	mRootSignature->Param(static_cast<uint32_t>(RootParamIdx::kSpotLight)).InitDescriptorRange(0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3);
-	mRootSignature->Param(static_cast<uint32_t>(RootParamIdx::kSkin)).InitDescriptorTable(1, D3D12_SHADER_VISIBILITY_VERTEX);
-	mRootSignature->Param(static_cast<uint32_t>(RootParamIdx::kSkin)).InitDescriptorRange(0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-	mRootSignature->Sampler(0) = DirectXCommon::gSamplerLinearClamp;
+	// ルートシグネチャ作成
+	mRootSignature = std::make_unique<RootSignature>(static_cast<uint32_t>(RootParamNum::kMax), 1);
+	mRootSignature->GetParameter(static_cast<uint32_t>(RootParamNum::kTransformationMat)).InitCBV(0, D3D12_SHADER_VISIBILITY_VERTEX);
+	mRootSignature->GetParameter(static_cast<uint32_t>(RootParamNum::kMaterial)).InitCBV(0, D3D12_SHADER_VISIBILITY_PIXEL);
+	mRootSignature->GetParameter(static_cast<uint32_t>(RootParamNum::kTexture)).InitDescriptorTable(1, D3D12_SHADER_VISIBILITY_PIXEL);
+	mRootSignature->GetParameter(static_cast<uint32_t>(RootParamNum::kTexture)).InitDescriptorRange(0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+	mRootSignature->GetParameter(static_cast<uint32_t>(RootParamNum::kCamera)).InitCBV(1, D3D12_SHADER_VISIBILITY_PIXEL);
+	mRootSignature->GetParameter(static_cast<uint32_t>(RootParamNum::kLightCommon)).InitCBV(2, D3D12_SHADER_VISIBILITY_PIXEL);
+	mRootSignature->GetParameter(static_cast<uint32_t>(RootParamNum::kDirectionalLight)).InitDescriptorTable(1, D3D12_SHADER_VISIBILITY_PIXEL);
+	mRootSignature->GetParameter(static_cast<uint32_t>(RootParamNum::kDirectionalLight)).InitDescriptorRange(0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
+	mRootSignature->GetParameter(static_cast<uint32_t>(RootParamNum::kPointLight)).InitDescriptorTable(1, D3D12_SHADER_VISIBILITY_PIXEL);
+	mRootSignature->GetParameter(static_cast<uint32_t>(RootParamNum::kPointLight)).InitDescriptorRange(0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
+	mRootSignature->GetParameter(static_cast<uint32_t>(RootParamNum::kSpotLight)).InitDescriptorTable(1, D3D12_SHADER_VISIBILITY_PIXEL);
+	mRootSignature->GetParameter(static_cast<uint32_t>(RootParamNum::kSpotLight)).InitDescriptorRange(0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3);
+	mRootSignature->GetParameter(static_cast<uint32_t>(RootParamNum::kMatPalette)).InitDescriptorTable(1, D3D12_SHADER_VISIBILITY_VERTEX);
+	mRootSignature->GetParameter(static_cast<uint32_t>(RootParamNum::kMatPalette)).InitDescriptorRange(0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+	mRootSignature->GetSampler(0) = DirectXCommon::gSamplerLinearClamp;
 	mRootSignature->Create();
 
-	D3D12_INPUT_ELEMENT_DESC inputElementDesc = {};
-	inputElementDesc.SemanticName = "POSITION";
-	inputElementDesc.SemanticIndex = 0;
-	inputElementDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	inputElementDesc.AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	mInputLayouts.emplace(inputElementDesc.SemanticName, inputElementDesc);
-	inputElementDesc.SemanticName = "NORMAL";
-	inputElementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	mInputLayouts.emplace(inputElementDesc.SemanticName, inputElementDesc);
-	inputElementDesc.SemanticName = "TEXCOORD";
-	inputElementDesc.Format = DXGI_FORMAT_R32G32_FLOAT;
-	mInputLayouts.emplace(inputElementDesc.SemanticName, inputElementDesc);
-	inputElementDesc.SemanticName = "WEIGHT";
-	inputElementDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	mInputLayouts.emplace(inputElementDesc.SemanticName, inputElementDesc);
-	inputElementDesc.SemanticName = "BONE_INDEX";
-	inputElementDesc.Format = DXGI_FORMAT_R32G32B32A32_SINT;
-	mInputLayouts.emplace(inputElementDesc.SemanticName, inputElementDesc);
+	// 頂点レイアウトを定義
+	D3D12_INPUT_ELEMENT_DESC desc = {};
+	desc.SemanticName = "POSITION";
+	desc.SemanticIndex = 0;
+	desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	desc.AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	mInputLayoutMap.emplace(desc.SemanticName, desc);
+	desc.SemanticName = "NORMAL";
+	desc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	mInputLayoutMap.emplace(desc.SemanticName, desc);
+	desc.SemanticName = "TEXCOORD";
+	desc.Format = DXGI_FORMAT_R32G32_FLOAT;
+	mInputLayoutMap.emplace(desc.SemanticName, desc);
+	desc.SemanticName = "WEIGHT";
+	desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	mInputLayoutMap.emplace(desc.SemanticName, desc);
+	desc.SemanticName = "BONE_INDEX";
+	desc.Format = DXGI_FORMAT_R32G32B32A32_SINT;
+	mInputLayoutMap.emplace(desc.SemanticName, desc);
 
-	CreatePipelineState(PSOFlags::kNone);
-	CreatePipelineState(PSOFlags::kHasTexture);
-	CreatePipelineState(PSOFlags::kHasSkin);
-	CreatePipelineState(PSOFlags::kHasTexture | PSOFlags::kHasSkin);
+	// パイプラインステートの作成
+	CreatePipelineState(PSOFlags::kNone);// テクスチャ、スキンなし
+	CreatePipelineState(PSOFlags::kTexture);// テクスチャあり
+	CreatePipelineState(PSOFlags::kSkin);// スキンあり
+	CreatePipelineState(PSOFlags::kTexture | PSOFlags::kSkin);// テクスチャ、スキンあり
 
+	// ライト関連を初期化
 	mLightCommonBuff = std::make_unique<ConstantBuffer>();
 	mLightCommonBuff->Create(sizeof(LightCommon));
 	mDirectionalLightBuff = std::make_unique<StructuredBuffer>();
@@ -55,6 +59,7 @@ void ModelBase::Initialize() {
 	mSpotLightBuff = std::make_unique<StructuredBuffer>();
 	mSpotLightBuff->Create(kMaxSpotLightNum, sizeof(SpotLight));
 
+	// デフォルトのカメラ
 	mDefaultCamera = std::make_unique<ModelCamera>();
 	mDefaultCamera->Create();
 	mDefaultCamera->mTranslate = Vector3(0.0f, 1.0f, -3.0f);
@@ -64,63 +69,27 @@ void ModelBase::Terminate() {
 
 }
 
+// モデル描画準備
 void ModelBase::Prepare() {
+	// デフォルトカメラの更新
 	mDefaultCamera->UpdateMatrix();
-
-	LightCommon common = {};
-	common.mDirectionalLightNum = MathUtil::Min(static_cast<uint32_t>(mDirectionalLights.size()), kMaxDirectionalLightNum);
-	common.mPointLightNum = MathUtil::Min(static_cast<uint32_t>(mPointLights.size()), kMaxPointLightNum);
-	common.mSpotLightNum = MathUtil::Min(static_cast<uint32_t>(mSpotLights.size()), kMaxSpotLightNum);
-	mLightCommonBuff->Update(common);
-	if (common.mDirectionalLightNum > 0) {
-		std::vector<DirectionalLight> tmp(kMaxDirectionalLightNum);
-		for (uint32_t i = 0; i < common.mDirectionalLightNum; ++i) {
-			tmp[i].mColor = mDirectionalLights[i]->mColor;
-			tmp[i].mIntensity = mDirectionalLights[i]->mIntensity;
-			tmp[i].mDirection = Normalize(mDirectionalLights[i]->mDirection);
-		}
-		mDirectionalLightBuff->Update(tmp.data());
-	}
-	if (common.mPointLightNum > 0) {
-		std::vector<PointLight> tmp(kMaxPointLightNum);
-		for (uint32_t i = 0; i < common.mPointLightNum; ++i) {
-			tmp[i].mColor = mPointLights[i]->mColor;
-			tmp[i].mIntensity = mPointLights[i]->mIntensity;
-			tmp[i].mPosition = mPointLights[i]->mPosition;
-			tmp[i].mRadius = mPointLights[i]->mRadius;
-			tmp[i].mDecay = mPointLights[i]->mDecay;
-		}
-		mPointLightBuff->Update(tmp.data());
-	}
-	if (common.mSpotLightNum > 0) {
-		std::vector<SpotLight> tmp(kMaxSpotLightNum);
-		for (uint32_t i = 0; i < common.mSpotLightNum; ++i) {
-			tmp[i].mColor = mSpotLights[i]->mColor;
-			tmp[i].mIntensity = mSpotLights[i]->mIntensity;
-			tmp[i].mDirection = Normalize(mSpotLights[i]->mDirection);
-			tmp[i].mPosition = mSpotLights[i]->mPosition;
-			tmp[i].mRadius = mSpotLights[i]->mRadius;
-			tmp[i].mDecay = mSpotLights[i]->mDecay;
-			tmp[i].mInner = std::cosf(mSpotLights[i]->mInner);
-			tmp[i].mOuter = std::cosf(mSpotLights[i]->mOuter);
-		}
-		mSpotLightBuff->Update(tmp.data());
-	}
+	// ライト関連の更新
+	UpdateLight();
 
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> cmdList = DirectXBase::GetInstance().GetCmdList();
 	mRootSignature->Set(cmdList);
 	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	mLightCommonBuff->Set(cmdList, static_cast<uint32_t>(RootParamIdx::kLightCommon));
-	mDirectionalLightBuff->Set(cmdList, static_cast<uint32_t>(RootParamIdx::kDirectionalLight));
-	mPointLightBuff->Set(cmdList, static_cast<uint32_t>(RootParamIdx::kPointLight));
-	mSpotLightBuff->Set(cmdList, static_cast<uint32_t>(RootParamIdx::kSpotLight));
+	// ライト関連をセット
+	mLightCommonBuff->Set(cmdList, static_cast<uint32_t>(RootParamNum::kLightCommon));
+	mDirectionalLightBuff->Set(cmdList, static_cast<uint32_t>(RootParamNum::kDirectionalLight));
+	mPointLightBuff->Set(cmdList, static_cast<uint32_t>(RootParamNum::kPointLight));
+	mSpotLightBuff->Set(cmdList, static_cast<uint32_t>(RootParamNum::kSpotLight));
 }
 
+// PSOフラグでパイプラインステートをセット
 void ModelBase::SetPipelineState(PSOFlags flags) {
-	PipelineState* pipelineState = GetPipelineState(flags);
-	if (pipelineState) {
-		pipelineState->Set(DirectXBase::GetInstance().GetCmdList());
-	}
+	PipelineState* ps = GetPipelineState(flags);
+	ps->Set(DirectXBase::GetInstance().GetCmdList());
 }
 
 void ModelBase::AddDirectionalLight(DirectionalLight* light) {
@@ -156,34 +125,42 @@ void ModelBase::RemoveSpotLight(SpotLight* light) {
 	}
 }
 
+// パイプラインステートを取得
 PipelineState* ModelBase::GetPipelineState(PSOFlags flags) {
 	auto it = mPipelineStates.find(flags);
 	if (it != mPipelineStates.end()) {
 		return it->second.get();
 	} else {
+		// なかったら作成する
 		return CreatePipelineState(flags);
 	}
 }
 
+// パイプラインステートを作成
 PipelineState* ModelBase::CreatePipelineState(PSOFlags flags) {
-	std::unique_ptr<PipelineState> pipelineState = std::make_unique<PipelineState>();
-	pipelineState->SetRootSignature(mRootSignature.get());
 	ResourceMgr& resourceMgr = ResourceMgr::GetInstance();
-	if ((flags & PSOFlags::kHasSkin) == PSOFlags::kHasSkin) {
-		pipelineState->SetVertexShader(resourceMgr.GetShader("resources/shaders/SkinModelVS.hlsl", "vs_6_0"));
+
+	PSOInit init;
+	init.mRootSignature = mRootSignature.get();
+	// 頂点シェーダ
+	if ((flags & PSOFlags::kSkin) == PSOFlags::kSkin) {
+		init.mVertexShader = resourceMgr.GetShader("resources/shaders/SkinModelVS.hlsl", "vs_6_0");
 	} else {
-		pipelineState->SetVertexShader(resourceMgr.GetShader("resources/shaders/ModelVS.hlsl", "vs_6_0"));
+		init.mVertexShader = resourceMgr.GetShader("resources/shaders/ModelVS.hlsl", "vs_6_0");
 	}
-	if ((flags & PSOFlags::kHasTexture) == PSOFlags::kHasTexture) {
-		pipelineState->SetPixelShader(resourceMgr.GetShader("resources/shaders/ModelPS.hlsl", "ps_6_0"));
+	// ピクセルシェーダ
+	if ((flags & PSOFlags::kTexture) == PSOFlags::kTexture) {
+		init.mPixelShader = resourceMgr.GetShader("resources/shaders/ModelPS.hlsl", "ps_6_0");
 	} else {
-		pipelineState->SetPixelShader(resourceMgr.GetShader("resources/shaders/NoTextureModelPS.hlsl", "ps_6_0"));
+		init.mPixelShader = resourceMgr.GetShader("resources/shaders/NoTextureModelPS.hlsl", "ps_6_0");
 	}
-	if ((flags & PSOFlags::kAlphaBlend) == PSOFlags::kAlphaBlend) {
-		pipelineState->SetBlendState(DirectXCommon::gBlendNormal);
+	// ブレンド
+	if ((flags & PSOFlags::kNormalBlend) == PSOFlags::kNormalBlend) {
+		init.mBlendDesc = DirectXCommon::gBlendNormal;
 	} else {
-		pipelineState->SetBlendState(DirectXCommon::gBlendNone);
+		init.mBlendDesc = DirectXCommon::gBlendNone;
 	}
+	// ラスタライザ
 	D3D12_RASTERIZER_DESC rasterizerDesc = DirectXCommon::gRasterizerDefault;
 	if ((flags & PSOFlags::kCurrNone) == PSOFlags::kCurrNone) {
 		rasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;
@@ -191,20 +168,70 @@ PipelineState* ModelBase::CreatePipelineState(PSOFlags flags) {
 	if ((flags & PSOFlags::kWireframe) == PSOFlags::kWireframe) {
 		rasterizerDesc.FillMode = D3D12_FILL_MODE_WIREFRAME;
 	}
-	pipelineState->SetRasterizerState(rasterizerDesc);
-	pipelineState->SetDepthStencilState(DirectXCommon::gDepthEnable);
-	std::vector<D3D12_INPUT_ELEMENT_DESC> inputLayouts;
-	inputLayouts.push_back(mInputLayouts["POSITION"]);
-	inputLayouts.push_back(mInputLayouts["NORMAL"]);
-	inputLayouts.push_back(mInputLayouts["TEXCOORD"]);
-	if ((flags & PSOFlags::kHasSkin) == PSOFlags::kHasSkin) {
-		inputLayouts.push_back(mInputLayouts["WEIGHT"]);
-		inputLayouts.push_back(mInputLayouts["BONE_INDEX"]);
+	init.mRasterizerDesc = rasterizerDesc;
+	// 深度ステンシル
+	init.mDepthStencilDesc = DirectXCommon::gDepthEnable;
+	// 頂点レイアウト
+	init.mInputLayouts.push_back(mInputLayoutMap["POSITION"]);
+	init.mInputLayouts.push_back(mInputLayoutMap["NORMAL"]);
+	init.mInputLayouts.push_back(mInputLayoutMap["TEXCOORD"]);
+	if ((flags & PSOFlags::kSkin) == PSOFlags::kSkin) {
+		init.mInputLayouts.push_back(mInputLayoutMap["WEIGHT"]);
+		init.mInputLayouts.push_back(mInputLayoutMap["BONE_INDEX"]);
 	}
-	pipelineState->SetInputLayout(static_cast<uint32_t>(inputLayouts.size()), inputLayouts.data());
-	pipelineState->SetPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
+	// プリミティブ型
+	init.mPrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 
-	pipelineState->Create();
-	mPipelineStates[flags] = std::move(pipelineState);
+	// パイプラインステートの作成と追加
+	std::unique_ptr<PipelineState> ps = std::make_unique<PipelineState>();
+	ps->Create(init);
+	mPipelineStates[flags] = std::move(ps);
 	return mPipelineStates[flags].get();
+}
+
+// ライトの更新
+void ModelBase::UpdateLight() {
+	// ライトの数(最大数は超えないように)
+	LightCommon lightCommon = {};
+	lightCommon.mDirectionalLightNum = MathUtil::Min(static_cast<uint32_t>(mDirectionalLights.size()), kMaxDirectionalLightNum);
+	lightCommon.mPointLightNum = MathUtil::Min(static_cast<uint32_t>(mPointLights.size()), kMaxPointLightNum);
+	lightCommon.mSpotLightNum = MathUtil::Min(static_cast<uint32_t>(mSpotLights.size()), kMaxSpotLightNum);
+	mLightCommonBuff->Update(lightCommon);
+	// 平行光源
+	if (lightCommon.mDirectionalLightNum > 0) {
+		std::vector<DirectionalLight> tmp(kMaxDirectionalLightNum);
+		for (uint32_t i = 0; i < lightCommon.mDirectionalLightNum; ++i) {
+			tmp[i].mColor = mDirectionalLights[i]->mColor;
+			tmp[i].mIntensity = mDirectionalLights[i]->mIntensity;
+			tmp[i].mDirection = Normalize(mDirectionalLights[i]->mDirection);// 正規化
+		}
+		mDirectionalLightBuff->Update(tmp.data());
+	}
+	// 点光源
+	if (lightCommon.mPointLightNum > 0) {
+		std::vector<PointLight> tmp(kMaxPointLightNum);
+		for (uint32_t i = 0; i < lightCommon.mPointLightNum; ++i) {
+			tmp[i].mColor = mPointLights[i]->mColor;
+			tmp[i].mIntensity = mPointLights[i]->mIntensity;
+			tmp[i].mPosition = mPointLights[i]->mPosition;
+			tmp[i].mRadius = mPointLights[i]->mRadius;
+			tmp[i].mDecay = mPointLights[i]->mDecay;
+		}
+		mPointLightBuff->Update(tmp.data());
+	}
+	// スポットライト
+	if (lightCommon.mSpotLightNum > 0) {
+		std::vector<SpotLight> tmp(kMaxSpotLightNum);
+		for (uint32_t i = 0; i < lightCommon.mSpotLightNum; ++i) {
+			tmp[i].mColor = mSpotLights[i]->mColor;
+			tmp[i].mIntensity = mSpotLights[i]->mIntensity;
+			tmp[i].mDirection = Normalize(mSpotLights[i]->mDirection);// 正規化
+			tmp[i].mPosition = mSpotLights[i]->mPosition;
+			tmp[i].mRadius = mSpotLights[i]->mRadius;
+			tmp[i].mDecay = mSpotLights[i]->mDecay;
+			tmp[i].mInner = std::cosf(mSpotLights[i]->mInner);// cosへ
+			tmp[i].mOuter = std::cosf(mSpotLights[i]->mOuter);// cosへ
+		}
+		mSpotLightBuff->Update(tmp.data());
+	}
 }

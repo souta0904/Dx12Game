@@ -6,48 +6,65 @@
 #include <vector>
 #include <wrl.h>
 
+class Shader;
+
+// ルートパラメータ
 class RootParameter {
 public:
 	friend class RootSignature;
 	~RootParameter();
 	void InitCBV(uint32_t registerNum, D3D12_SHADER_VISIBILITY shaderVisibility = D3D12_SHADER_VISIBILITY_ALL);
 	void InitDescriptorTable(uint32_t rangeNum, D3D12_SHADER_VISIBILITY shaderVisibility = D3D12_SHADER_VISIBILITY_ALL);
-	void InitDescriptorRange(uint32_t idx, D3D12_DESCRIPTOR_RANGE_TYPE rangeType, uint32_t numDescs, uint32_t registerNum);
+	void InitDescriptorRange(uint32_t idx, D3D12_DESCRIPTOR_RANGE_TYPE rangeType, uint32_t descNum, uint32_t baseRegisterNum);
 private:
-	D3D12_ROOT_PARAMETER mRootParam;
+	D3D12_ROOT_PARAMETER mRootParameter;
 };
 
+// ルートシグネチャ
 class RootSignature {
 public:
-	RootSignature(uint32_t numParams, uint32_t numSamplers);
-	RootParameter& Param(uint32_t idx);
-	D3D12_STATIC_SAMPLER_DESC& Sampler(uint32_t idx);
+	RootSignature(uint32_t parameterNum, uint32_t samplerNum);
+	// ルートパラメータにアクセス
+	RootParameter& GetParameter(uint32_t idx);
+	// サンプラーにアクセス
+	D3D12_STATIC_SAMPLER_DESC& GetSampler(uint32_t idx);
 	void Create();
 	void Set(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> cmdList);
+
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> GetRootSignature() const { return mRootSignature; }
+
 private:
-	uint32_t mNumParams;
-	std::unique_ptr<RootParameter[]> mParams;
-	uint32_t mNumSamplers;
+	uint32_t mParameterNum;
+	std::unique_ptr<RootParameter[]> mParameters;
+	uint32_t mSamplerNum;
 	std::unique_ptr<D3D12_STATIC_SAMPLER_DESC[]> mSamplers;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> mRootSignature;
 };
 
+// パイプライン初期化用
+struct PSOInit {
+	RootSignature* mRootSignature;
+	Shader* mVertexShader;
+	Shader* mPixelShader;
+	D3D12_BLEND_DESC mBlendDesc;
+	D3D12_RASTERIZER_DESC mRasterizerDesc;
+	D3D12_DEPTH_STENCIL_DESC mDepthStencilDesc;
+	std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayouts;
+	// デフォルトでD3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
+	D3D12_PRIMITIVE_TOPOLOGY_TYPE mPrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+};
+
+// パイプラインステート
 class PipelineState {
 public:
 	PipelineState();
-	PipelineState(const PipelineState& ps);
-	PipelineState& operator=(const PipelineState& ps);
-	void SetRootSignature(RootSignature* rs);
-	void SetVertexShader(Microsoft::WRL::ComPtr<IDxcBlob> vs);
-	void SetPixelShader(Microsoft::WRL::ComPtr<IDxcBlob> ps);
-	void SetBlendState(D3D12_BLEND_DESC bs);
-	void SetRasterizerState(D3D12_RASTERIZER_DESC rs);
-	void SetDepthStencilState(D3D12_DEPTH_STENCIL_DESC dss);
-	void SetInputLayout(uint32_t num, const D3D12_INPUT_ELEMENT_DESC* descs);
-	void SetPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE ptt);
-	void Create();
+	// コピー、代入の定義
+	PipelineState(const PipelineState& pipelineState);
+	PipelineState& operator=(const PipelineState& pipelineState);
+
+	void Create(const PSOInit& init);
 	void Set(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> cmdList);
+
 private:
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC mDesc;
 	std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayouts;

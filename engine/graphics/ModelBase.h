@@ -1,46 +1,17 @@
 #pragma once
 #include "ModelCamera.h"
 #include "directX/PipelineState.h"
+#include "Light.h"
 #include "PSOFlags.h"
 #include <memory>
 #include <string>
 #include <unordered_map>
 
-struct LightCommon {
-	uint32_t mDirectionalLightNum;
-	uint32_t mPointLightNum;
-	uint32_t mSpotLightNum;
-};
-
-struct DirectionalLight {
-	Vector3 mColor;
-	float mIntensity;
-	Vector3 mDirection;
-};
-
-struct PointLight {
-	Vector3 mColor;
-	float mIntensity;
-	Vector3 mPosition;
-	float mRadius;
-	float mDecay;
-};
-
-struct SpotLight {
-	Vector3 mColor;
-	float mIntensity;
-	Vector3 mDirection;
-	Vector3 mPosition;
-	float mRadius;
-	float mDecay;
-	float mInner;
-	float mOuter;
-};
-
+// モデル基盤
 class ModelBase {
 public:
-	friend class Model;
-
+	friend class ModelInstance;
+	// シングルトンを実装
 	static ModelBase& GetInstance() {
 		static ModelBase instance;
 		return instance;
@@ -49,26 +20,35 @@ public:
 	ModelBase& operator=(const ModelBase&) = delete;
 	ModelBase(ModelBase&&) = delete;
 	ModelBase& operator=(ModelBase&&) = delete;
+private:
+	ModelBase() = default;
+	~ModelBase() = default;
 
-	enum class RootParamIdx {
-		kTransformationMat,
-		kMaterial,
-		kTexture,
-		kCamera,
-		kLightCommon,
-		kDirectionalLight,
-		kPointLight,
-		kSpotLight,
-		kSkin,
+public:
+	// ルートパラメータ番号
+	enum class RootParamNum {
+		kTransformationMat,	// 変換行列
+		kMaterial,			// マテリアル
+		kTexture,			// テクスチャ
+		kCamera,			// カメラ座標
+		kLightCommon,		// ライト共通
+		kDirectionalLight,	// 平行光源
+		kPointLight,		// 点光源
+		kSpotLight,			// スポットライト
+		kMatPalette,		// 行列パレット
 		kMax
 	};
 
 	void Initialize();
 	void Terminate();
+	// モデル描画準備
 	void Prepare();
+	// PSOフラグでパイプラインステートをセット
 	void SetPipelineState(PSOFlags flags);
+
 	ModelCamera* GetDefaultCamera() const { return mDefaultCamera.get(); }
 
+	// ライト関連(追加と削除)
 	void AddDirectionalLight(DirectionalLight* light);
 	void AddPointLight(PointLight* light);
 	void AddSpotLight(SpotLight* light);
@@ -77,20 +57,22 @@ public:
 	void RemoveSpotLight(SpotLight* light);
 
 private:
-	ModelBase() = default;
-	~ModelBase() = default;
-	PipelineState* GetPipelineState(PSOFlags flags);
-	PipelineState* CreatePipelineState(PSOFlags flags);
+	PipelineState* GetPipelineState(PSOFlags flags);// 取得
+	PipelineState* CreatePipelineState(PSOFlags flags);// 作成
+	// ライト更新
+	void UpdateLight();
 
 private:
 	std::unique_ptr<RootSignature> mRootSignature;
-	std::unordered_map<std::string, D3D12_INPUT_ELEMENT_DESC> mInputLayouts;
 	std::unordered_map<PSOFlags, std::unique_ptr<PipelineState>> mPipelineStates;
 	std::unique_ptr<ModelCamera> mDefaultCamera;
+	// セマンティック名と頂点レイアウトの要素のマップ
+	std::unordered_map<std::string, D3D12_INPUT_ELEMENT_DESC> mInputLayoutMap;
 
-	static const uint32_t kMaxDirectionalLightNum = 256;
-	static const uint32_t kMaxPointLightNum = 256;
-	static const uint32_t kMaxSpotLightNum = 256;
+	// ライト関連
+	static const uint32_t kMaxDirectionalLightNum = 8;
+	static const uint32_t kMaxPointLightNum = 8;
+	static const uint32_t kMaxSpotLightNum = 8;
 	std::unique_ptr<ConstantBuffer> mLightCommonBuff;
 	std::unique_ptr<StructuredBuffer> mDirectionalLightBuff;
 	std::unique_ptr<StructuredBuffer> mPointLightBuff;

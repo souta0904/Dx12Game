@@ -136,6 +136,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\graphics\RenderTexture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\graphics\Light.h" />
     <ClInclude Include="game\Course.h" />
     <ClInclude Include="engine\directX\Buffer.h" />
     <ClInclude Include="engine\graphics\BlendMode.h" />

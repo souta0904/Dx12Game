@@ -136,6 +136,7 @@
     <ClInclude Include="game\Player.h" />
     <ClInclude Include="game\Transform.h" />
     <ClInclude Include="engine\graphics\RenderTexture.h" />
+    <ClInclude Include="engine\graphics\Light.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="engine">

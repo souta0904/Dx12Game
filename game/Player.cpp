@@ -5,11 +5,13 @@
 #include "input/InputBase.h"
 
 void Player::Initialize() {
-	mModel = std::make_unique<Model>();
-	mModel->Create(ResourceMgr::GetInstance().GetModelData("resources/walk.gltf"));
-	mModel->Play("Armature|mixamo.com|Layer0", 3.0f);
-	mTransform.mScale = Vector3(100.0f, 100.0f, 100.0f);
-	mSpeed = 0.2f;
+	mModel = std::make_unique<ModelInstance>();
+	mModel->Create(ResourceMgr::GetInstance().GetModel("resources/player.gltf"));
+	mModel->SetFlags(PSOFlags::kWireframe);
+	//mModel->PlayAtName("Armature|mixamo.com|Layer0", 3.0f);
+	//mModel->PlayAtIdx(0, 3.0f);
+	//mTransform.mScale = Vector3(100.0f, 100.0f, 100.0f);
+	mSpeed = 0.07f;
 }
 
 void Player::Update(InputBase* input, float deltaTime) {
@@ -42,8 +44,11 @@ void Player::Update(InputBase* input, float deltaTime) {
 		p.mRadius * sinf(mAngle),
 		0.0f) +
 		p.mPosition;
-	mTransform.mRotate = Quaternion(Vector3::kUnitX, -MathUtil::kPiOver2) * Quaternion(Vector3::kUnitZ, mAngle + MathUtil::kPiOver2) * p.mRotate;
-	ModelBase::GetInstance().GetDefaultCamera()->mTranslate = p.mPosition - Vector3(0.0f, 0.0f, 6.0f);
+	//mTransform.mRotate = Quaternion(Vector3::kUnitX, -MathUtil::kPiOver2) * Quaternion(Vector3::kUnitZ, mAngle + MathUtil::kPiOver2) * p.mRotate;
+	mTransform.mRotate = Quaternion(Vector3::kUnitZ, mAngle + MathUtil::kPiOver2) * p.mRotate;
+	ModelBase::GetInstance().GetDefaultCamera()->mTranslate = p.mPosition - Vector3(0.0f, 0.0f, 15.0f);
+	ModelBase::GetInstance().GetDefaultCamera()->mTranslate.x = 0.0f;
+	ModelBase::GetInstance().GetDefaultCamera()->mTranslate.y = 8.0f;
 	mModel->Update(deltaTime);
 }
 
