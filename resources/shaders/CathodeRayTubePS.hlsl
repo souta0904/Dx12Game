@@ -8,36 +8,45 @@ struct PSOutput
     float32_t4 mColor : SV_TARGET0;
 };
 
-struct Time
+// CRT用定数
+struct Constant
 {
     float32_t mTime;
+    float32_t mZoom;
+    float32_t mDistortion;
+    float32_t mNoise;
+    float32_t mNoiseScaleX;
+    float32_t mNoiseScaleY;
+    float32_t mNoiseSpeed;
+    float32_t2 mRGBShift;
 };
-ConstantBuffer<Time> gTime : register(b0);
+ConstantBuffer<Constant> gConstant : register(b0);
 
-// k: 歪み定数
-float32_t2 Distortion(float32_t2 uv, float32_t k)
+// 歪み関数
+float32_t2 Distortion(float32_t2 uv)
 {
-    float32_t2 zoom = 0.95f;
-    float32_t2 centeredUV = (uv - 0.5) * zoom + 0.5;
+    float32_t2 centeredUV = (uv - 0.5) * gConstant.mZoom + 0.5;
     centeredUV = centeredUV * 2.0 - 1.0;
     float32_t radiusSq = dot(centeredUV, centeredUV);
-    float32_t f = 1.0 + k * radiusSq;
+    float32_t f = 1.0 + gConstant.mDistortion * radiusSq;
     return (centeredUV * f) * 0.5 + 0.5;
 }
 
 PSOutput main(VSOutput input)
 {
     PSOutput output;
-    
-    float32_t2 uv = Distortion(input.mUV, 0.2f);
-    
+    // 歪み
+    float32_t2 uv = Distortion(input.mUV);
+    // ノイズ
     float32_t noise =
-        sin(uv.y * 800.0f) * 0.05f +
-        (sin(uv.x * 150.0f + gTime.mTime * 50.0f) * sin(uv.y * 150.0f + gTime.mTime * 50.0f)) * 0.01f;
-    
-    float32_t2 uvR = uv + float32_t2(0.00225f, 0.004f);
+        sin(uv.y * gConstant.mNoiseScaleY) * gConstant.mNoise +
+        (sin(uv.x * gConstant.mNoiseScaleY + gConstant.mTime * gConstant.mNoiseSpeed) *
+         sin(uv.y * gConstant.mNoiseScaleY + gConstant.mTime * gConstant.mNoiseSpeed)) *
+        (gConstant.mNoise * 0.2f);
+    // RGBずらし
+    float32_t2 uvR = uv + gConstant.mRGBShift.x;
     float32_t2 uvG = uv;
-    float32_t2 uvB = uv + float32_t2(0.00225f, 0.004f);
+    float32_t2 uvB = uv - gConstant.mRGBShift.y;
     
     if (uvR.x < 0 || uvR.x > 1 || uvR.y < 0 || uvR.y > 1 ||
         uvG.x < 0 || uvG.x > 1 || uvG.y < 0 || uvG.y > 1 ||

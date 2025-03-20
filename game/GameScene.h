@@ -12,7 +12,7 @@ public:
 	void Initialize() override;
 	void Terminate() override;
 	void Update(InputBase* input, float deltaTime)  override;
-
+	// 描画
 	void DrawBackground() override;
 	void DrawModel() override;
 	void DrawPrimitive() override;

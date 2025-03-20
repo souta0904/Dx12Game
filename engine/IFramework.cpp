@@ -41,6 +41,8 @@ void IFramework::Initialize() {
 
 	mDirectXBase = &DirectXBase::GetInstance();
 	mDirectXBase->Initialize();
+	mImGuiWrapper = std::make_unique<ImGuiWrapper>();
+	mImGuiWrapper->Initialize();
 	mResourceMgr = &ResourceMgr::GetInstance();
 	mResourceMgr->Initialize();
 	mInput = std::make_unique<InputBase>();
@@ -78,6 +80,9 @@ void IFramework::Terminate() {
 	}
 	if (mResourceMgr) {
 		mResourceMgr->Terminate();
+	}
+	if (mImGuiWrapper) {
+		mImGuiWrapper->Terminate();
 	}
 	if (mDirectXBase) {
 		mDirectXBase->Terminate();

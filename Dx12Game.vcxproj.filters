@@ -65,6 +65,7 @@
     <ClCompile Include="game\Player.cpp" />
     <ClCompile Include="math\Transform.cpp" />
     <ClCompile Include="engine\graphics\RenderTexture.cpp" />
+    <ClCompile Include="engine\ImGuiWrapper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Helper.h">
@@ -137,6 +138,7 @@
     <ClInclude Include="math\Transform.h" />
     <ClInclude Include="engine\graphics\RenderTexture.h" />
     <ClInclude Include="engine\graphics\Light.h" />
+    <ClInclude Include="engine\ImGuiWrapper.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="engine">

@@ -8,6 +8,7 @@
 #include <chrono>
 #include <memory>
 
+// ゲーム
 class Game : public IFramework {
 protected:
 	void Initialize() override;
@@ -19,15 +20,27 @@ private:
 	// デルタタイム
 	std::chrono::steady_clock::time_point mPrevTime;
 	float mDeltaTime;
-
-	// シーンの描画先
-	std::unique_ptr<RenderTexture> mSceneRT;
-	// CRTポストエフェクト
-	std::unique_ptr<RootSignature> mCRT_RS;
-	std::unique_ptr<PipelineState> mCRT_PS;
-	std::unique_ptr<ConstantBuffer> mCRT_CB;
-	float mCRTTime;
-
 	// ライト
 	std::unique_ptr<DirectionalLight> mDirectionalLight;
+
+	// シーンのレンダリング先
+	std::unique_ptr<RenderTexture> mSceneRT;
+	// ポストエフェクト
+	std::unique_ptr<RootSignature> mCRT_RS;
+	std::unique_ptr<PipelineState> mCRT_PS;
+	// ポストエフェクト用定数
+	struct CRT_Constant {
+		float mTime;					// 時間
+		float mZoom = 0.93f;			// 拡大縮小
+		float mDistortion = 0.1f;		// 歪み
+		float mNoise = 0.02f;			// ノイズ
+		float mNoiseScaleX = 100.0f;	// ノイズスケールX
+		float mNoiseScaleY = 800.0f;	// ノイズスケールY
+		float mNoiseSpeed = 15.0f;		// ノイズの速さ
+		float mPad1;
+		Vector2 mRGBShift;				// RGBずらし
+		float mPad[2];
+	};
+	CRT_Constant mCRT_Constant;
+	std::unique_ptr<ConstantBuffer> mCRT_CB;
 };

@@ -11,7 +11,7 @@ void Player::Initialize() {
 	//mModel->Create(ResourceMgr::GetInstance().GetModel("resources/walk.gltf"));
 	//mModel->PlayAtName("Armature|mixamo.com|Layer0", 3.0f);
 	//mModel->PlayAtIdx(0, 3.0f);
-	mSpeed = 0.1f;
+	mSpeed = 0.25f;
 	mAngle = -MathUtil::kPiOver2;
 	mAngleSpeed = MathUtil::kPiOver2;
 }
@@ -46,10 +46,35 @@ void Player::Update(InputBase* input, float deltaTime) {
 		Course::CircumferenceInfo courceInfo = mCurrCource->GetCircumferenceInfo(mCurrSection, mT, mAngle);
 		mTransform.mTranslate = courceInfo.mPosition;
 		mTransform.mRotate = Quaternion(Vector3::kUnitZ, mAngle + MathUtil::kPiOver2) * courceInfo.mRotate;
-		// カメラ座標
-		ModelBase::GetInstance().GetDefaultCamera()->mTranslate.x = mTransform.mTranslate.x / 2.0f;
-		ModelBase::GetInstance().GetDefaultCamera()->mTranslate.y = mTransform.mTranslate.y / 2.0f + 2.5f;
-		ModelBase::GetInstance().GetDefaultCamera()->mTranslate.z = mTransform.mTranslate.z - 10.0f;
+
+		// カメラ
+		float cameraT = mT - 0.1f;
+		uint32_t cameraSection = mCurrSection;
+		if (cameraT <= 0.0f) {
+			if (cameraSection > 0) {
+				cameraT += 1.0f;
+				--cameraSection;
+			} else {
+				cameraT = 0.0f;
+				cameraSection = 0;
+			}
+		}
+		Course::CenterInfo centerInfo = mCurrCource->GetCenterInfo(cameraSection, cameraT);
+		float nextT = cameraT += 0.25f;
+		if (nextT >= 1.0f) {
+			if (cameraSection < mCurrCource->GetSectionNum() - 1) {
+				nextT -= 1.0f;
+				// 次の区間
+				++cameraSection;
+			} else {
+				nextT = 1.0f;
+			}
+		}
+		Course::CenterInfo nextInfo = mCurrCource->GetCenterInfo(cameraSection, nextT);
+		Quaternion rotate = Course::CalcDirection(centerInfo.mPosition, nextInfo.mPosition);
+		ModelCamera* camera = ModelBase::GetInstance().GetDefaultCamera();
+		camera->mTranslate = centerInfo.mPosition;
+		camera->mRotate = rotate;
 
 		mTransform.Update();
 		mModel->Update(deltaTime);

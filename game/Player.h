@@ -14,6 +14,8 @@ public:
 	void Draw();
 
 	void SetCource(Course* cource) { mCurrCource = cource; }
+	uint32_t GetCurrSection() const { return mCurrSection; }
+	float GetT() const { return mT; }
 
 private:
 	Transform mTransform;

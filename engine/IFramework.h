@@ -1,4 +1,5 @@
 #pragma once
+#include "ImGuiWrapper.h"
 #include "input/InputBase.h"
 #include "scene/IScene.h"
 #include <memory>
@@ -30,6 +31,7 @@ protected:
 	bool mIsRunning = true;// 実行中か
 	Window* mWindow;// ウィンドウ
 	DirectXBase* mDirectXBase;// DirectX基盤
+	std::unique_ptr<ImGuiWrapper> mImGuiWrapper;
 	ResourceMgr* mResourceMgr;// リソース管理
 	std::unique_ptr<InputBase> mInput;// 入力
 	// レンダリング関連

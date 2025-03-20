@@ -3,6 +3,8 @@
 #include "Vector3.h"
 #include <vector>
 
+class Player;
+
 // 制御点
 struct ControlPoint {
 	Vector3 mPosition;
@@ -34,6 +36,10 @@ public:
 	CircumferenceInfo GetCircumferenceInfo(uint32_t section, float t, float angle);
 
 	const uint32_t GetSectionNum() const { return mSectionNum; }
+	void SetPlayer(Player* player) { mPlayer = player; }
+
+	// 始点と終点から向きを計算
+	static Quaternion CalcDirection(const Vector3& start, const Vector3& end);
 
 private:
 	// スプライン曲線
@@ -43,13 +49,12 @@ private:
 		return 0.5f * ((-p0 + 3.0f * p1 - 3.0f * p2 + p3) * t * t * t + (2.0f * p0 - 5.0f * p1 + 4.0f * p2 - p3) * t * t + (-p0 + p2) * t + 2.0f * p1);
 	}
 
-	// 始点と終点から向きを計算
-	Quaternion CalcDirection(const Vector3& start, const Vector3& end);
-
 private:
 	std::vector<ControlPoint> mControlPoints;// 制御点
 	uint32_t mSectionNum;// 区間の数
 
+	// 1区間の分割数
+	const uint32_t kDivNum = 40;
 	// 中心線用
 	struct LinePosition {
 		Vector3 mStart;
@@ -58,4 +63,7 @@ private:
 	std::vector<LinePosition> mCenterLine;// 点線
 	// 上下左右の線用
 	std::vector<Vector3> mLinePoints[4];
+
+	// プレイヤー
+	Player* mPlayer;
 };

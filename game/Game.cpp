@@ -12,11 +12,11 @@
 void Game::Initialize() {
 	IFramework::Initialize();
 
-	// レンダーターゲット
+	// シーンのレンダリング先
 	mSceneRT = std::make_unique<RenderTexture>();
 	Window& window = Window::GetInstance();
 	mSceneRT->Create(window.GetClientWidth(), window.GetClientHeight(), true);
-	// CRTポストエフェクト
+	// ポストエフェクト
 	mCRT_RS = std::make_unique<RootSignature>(2, 1);
 	mCRT_RS->GetParameter(0).InitDescriptorTable(1, D3D12_SHADER_VISIBILITY_PIXEL);
 	mCRT_RS->GetParameter(0).InitDescriptorRange(0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
@@ -27,7 +27,8 @@ void Game::Initialize() {
 	init.mRootSignature = mCRT_RS.get();
 	ResourceMgr& resourceMgr = ResourceMgr::GetInstance();
 	init.mVertexShader = resourceMgr.GetShader("resources/shaders/CopyImageVS.hlsl", "vs_6_0");
-	init.mPixelShader = resourceMgr.GetShader("resources/shaders/CopyImagePS.hlsl", "ps_6_0");
+	//init.mPixelShader = resourceMgr.GetShader("resources/shaders/CopyImagePS.hlsl", "ps_6_0");// そのまま
+	init.mPixelShader = resourceMgr.GetShader("resources/shaders/CathodeRayTubePS.hlsl", "ps_6_0");
 	init.mBlendDesc = DirectXCommon::gBlendNone;
 	init.mRasterizerDesc = DirectXCommon::gRasterizerCullModeNone;
 	init.mDepthStencilDesc = DirectXCommon::gDepthDisable;
@@ -35,15 +36,18 @@ void Game::Initialize() {
 	mCRT_PS = std::make_unique<PipelineState>();
 	mCRT_PS->Create(init);
 	mCRT_CB = std::make_unique<ConstantBuffer>();
-	mCRT_CB->Create(sizeof(float));
+	mCRT_CB->Create(sizeof(CRT_Constant));
+	mCRT_Constant.mRGBShift.x = 0.0005f;
+	mCRT_Constant.mRGBShift.y = 0.0005f;
 
-	// ライト
+	// デフォルトのライト
 	mDirectionalLight = std::make_unique<DirectionalLight>();
 	mDirectionalLight->mColor = Vector3(1.0f, 1.0f, 1.0f);
 	mDirectionalLight->mIntensity = 1.0f;
 	mDirectionalLight->mDirection = Normalize(Vector3(0.0f, -1.0f, 0.0f));
 	mModelBase->AddDirectionalLight(mDirectionalLight.get());
 
+	// 最初のシーン
 	ChangeScene(new GameScene(this));
 
 	mPrevTime = std::chrono::steady_clock::now();
@@ -54,7 +58,9 @@ void Game::Terminate() {
 }
 
 void Game::Update() {
+	mImGuiWrapper->Begin();
 	mInput->Update();
+
 	// デルタタイム計算
 	std::chrono::steady_clock::time_point currTime = std::chrono::steady_clock::now();
 	std::chrono::microseconds duration = std::chrono::duration_cast<std::chrono::microseconds>(currTime - mPrevTime);
@@ -66,7 +72,19 @@ void Game::Update() {
 		mCurrScene->Update(mInput.get(), mDeltaTime);
 	}
 
-	mCRTTime += mDeltaTime;
+	// ポストエフェクト用定数を更新
+	mCRT_Constant.mTime += mDeltaTime;
+	ImGui::Begin("Post effect");
+	ImGui::DragFloat("Zoom", &mCRT_Constant.mZoom, 0.001f);
+	ImGui::DragFloat("Distortion", &mCRT_Constant.mDistortion, 0.001f);
+	ImGui::DragFloat("Noise", &mCRT_Constant.mNoise, 0.001f);
+	ImGui::DragFloat("Noise scale x", &mCRT_Constant.mNoiseScaleX, 1.0f);
+	ImGui::DragFloat("Noise scale y", &mCRT_Constant.mNoiseScaleY, 1.0f);
+	ImGui::DragFloat("Noise speed", &mCRT_Constant.mNoiseSpeed, 1.0f);
+	ImGui::DragFloat2("RGB shift", &mCRT_Constant.mRGBShift.x, 0.00001f, 0.0f, 1.0f, "%8.6f");
+	ImGui::End();
+
+	mImGuiWrapper->End();
 }
 
 void Game::Draw() {
@@ -111,8 +129,9 @@ void Game::Draw() {
 	mCRT_PS->Set(cmdList);
 	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	mSceneRT->Set(cmdList, 0);
-	mCRT_CB->Update(mCRTTime);
+	mCRT_CB->Update(mCRT_Constant);
 	mCRT_CB->Set(cmdList, 1);
 	cmdList->DrawInstanced(3, 1, 0, 0);// ポストエフェクト
+	mImGuiWrapper->Draw(cmdList);// ImGui
 	mDirectXBase->ExecuteCmdList();
 }

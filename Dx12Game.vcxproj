@@ -112,6 +112,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\input\InputBase.cpp" />
     <ClCompile Include="game\GameScene.cpp" />
     <ClCompile Include="game\Game.cpp" />
+    <ClCompile Include="engine\ImGuiWrapper.cpp" />
     <ClCompile Include="math\Transform.cpp" />
     <ClCompile Include="math\EulerAngle.cpp" />
     <ClCompile Include="main.cpp" />
@@ -152,6 +153,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="game\GameScene.h" />
     <ClInclude Include="game\Game.h" />
     <ClInclude Include="engine\scene\IScene.h" />
+    <ClInclude Include="engine\ImGuiWrapper.h" />
     <ClInclude Include="math\Transform.h" />
     <ClInclude Include="math\EulerAngle.h" />
     <ClInclude Include="math\MathUtil.h" />
