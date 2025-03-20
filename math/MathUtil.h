@@ -7,7 +7,9 @@ class EulerAngle;
 class Matrix4;
 class Quaternion;
 
+// 数学関連のヘルパー
 namespace MathUtil {
+
 	const float kPi = std::numbers::pi_v<float>;
 	const float k2Pi = kPi * 2.0f;
 	const float kPiOver2 = kPi / 2.0f;
@@ -37,6 +39,7 @@ namespace MathUtil {
 		return (1.0f - t) * a + t * b;
 	}
 
+	// 符号関数
 	inline int Sign(float x) {
 		return (x > 0.0f) - (x < 0.0f);
 	}
@@ -49,6 +52,7 @@ namespace MathUtil {
 		return angle * kPiOver180;
 	}
 
+	// -πからπの範囲に収める
 	inline float WrapPi(float angle) {
 		angle += kPi;
 		angle -= std::floor(angle * k1Over2Pi) * k2Pi;
@@ -56,6 +60,7 @@ namespace MathUtil {
 		return angle;
 	}
 
+	// -180から180の範囲に収める
 	inline float Wrap180(float angle) {
 		angle += 180.0f;
 		angle -= std::floor(angle / 360.0f) * 360.0f;
@@ -63,10 +68,12 @@ namespace MathUtil {
 		return angle;
 	}
 
+	// 回転の変換関数
 	EulerAngle ToEulerAngle(const Matrix4& m);
 	EulerAngle ToEulerAngle(const Quaternion& q);
 	Matrix4 ToMatrix4(const EulerAngle& e);
 	Matrix4 ToMatrix4(const Quaternion& q);
 	Quaternion ToQuaternion(const EulerAngle& e);
 	Quaternion ToQuaternion(const Matrix4& m);
+
 }

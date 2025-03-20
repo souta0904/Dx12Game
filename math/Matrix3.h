@@ -2,6 +2,7 @@
 
 class Vector2;
 
+// 3x3行列
 class Matrix3 {
 public:
 	float m[3][3];

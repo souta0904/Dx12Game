@@ -11,6 +11,7 @@ public:
 
 	Quaternion();
 	Quaternion(float x, float y, float z, float w);
+	// 軸と角度(ラジアン)から
 	Quaternion(const Vector3& axis, float angle);
 
 	void Normalize();

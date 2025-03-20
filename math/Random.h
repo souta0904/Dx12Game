@@ -12,7 +12,6 @@ public:
 	static Vector2 Rand(const Vector2& min, const Vector2& max);
 	static Vector3 Rand(const Vector3& min, const Vector3& max);
 	static Vector4 Rand(const Vector4& min, const Vector4& max);
-
 private:
 	static std::mt19937 sEngine;
 };

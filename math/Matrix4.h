@@ -3,6 +3,7 @@
 class Quaternion;
 class Vector3;
 
+// 4x4行列
 class Matrix4 {
 public:
 	float m[4][4];

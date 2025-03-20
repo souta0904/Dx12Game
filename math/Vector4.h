@@ -3,6 +3,7 @@
 class Vector2;
 class Vector3;
 
+// 4Dベクトル
 class Vector4 {
 public:
 	float x;

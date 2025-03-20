@@ -6,6 +6,7 @@
 
 namespace MathUtil {
 
+	// 行列をオイラー角へ
 	EulerAngle ToEulerAngle(const Matrix4& m) {
 		EulerAngle result;
 		float sy = -m.m[0][2];
@@ -26,6 +27,7 @@ namespace MathUtil {
 		return result;
 	}
 
+	// クォータニオンをオイラー角へ
 	EulerAngle ToEulerAngle(const Quaternion& q) {
 		EulerAngle result;
 		float sy = -2.0f * (q.x * q.z - q.w * q.y);
@@ -41,6 +43,7 @@ namespace MathUtil {
 		return result;
 	}
 
+	// オイラー角を行列へ
 	Matrix4 ToMatrix4(const EulerAngle& e) {
 		Vector3 euler;
 		euler.x = ToRadians(e.x);
@@ -65,6 +68,7 @@ namespace MathUtil {
 		return result;
 	}
 
+	// クォータニオンを行列へ
 	Matrix4 ToMatrix4(const Quaternion& q) {
 		float ww = q.w * 2.0f;
 		float xx = q.x * 2.0f;
@@ -83,6 +87,7 @@ namespace MathUtil {
 		return result;
 	}
 
+	// オイラー角をクォータニオンへ
 	Quaternion ToQuaternion(const EulerAngle& e) {
 		Vector3 half;
 		half.x = ToRadians(e.x) * 0.5f;
@@ -102,6 +107,7 @@ namespace MathUtil {
 		);
 	}
 
+	// 行列をクォータニオンへ
 	Quaternion ToQuaternion(const Matrix4& m) {
 		float tx = m.m[0][0] - m.m[1][1] - m.m[2][2];
 		float ty = m.m[1][1] - m.m[0][0] - m.m[2][2];
@@ -155,4 +161,5 @@ namespace MathUtil {
 			);
 		}
 	}
+
 }
