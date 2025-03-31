@@ -63,7 +63,7 @@ void Player::Update(InputBase* input, float deltaTime) {
 			std::unique_ptr<PlayerBullet> bullet = std::make_unique<PlayerBullet>(this);
 			bullet->Initialize();
 			mBullets.emplace_back(std::move(bullet));
-			mCooldown = 0.1f;
+			mCooldown = 0.05f;
 		}
 
 		// 更新

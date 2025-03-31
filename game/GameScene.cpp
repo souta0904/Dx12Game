@@ -3,17 +3,17 @@
 void GameScene::Initialize() {
 	// コース1
 	mCourse1 = std::make_unique<Course>(this);
-	mCourse1->AddPoint({ Vector3(-5.0f,5.0f,100.0f),5.0f });
-	mCourse1->AddPoint({ Vector3(0.0f,10.0f,200.0f),5.0f });
-	mCourse1->AddPoint({ Vector3(5.0f,0.0f,300.0f),5.0f });
-	mCourse1->AddPoint({ Vector3(20.0f,0.0f,400.0f),2.0f });
-	mCourse1->AddPoint({ Vector3(-5.0f,-5.0f,500.0f),2.0f });
-	mCourse1->AddPoint({ Vector3(0.0f,20.0f,600.0f),5.0f });
-	mCourse1->AddPoint({ Vector3(0.0f,10.0f,700.0f),5.0f });
-	mCourse1->AddPoint({ Vector3(0.0f,10.0f,800.0f),5.0f });
-	mCourse1->AddPoint({ Vector3(0.0f,10.0f,900.0f),5.0f });
-	mCourse1->AddPoint({ Vector3(200.0f,5.0f,1000.0f),5.0f });
-	mCourse1->AddPoint({ Vector3(50.0f,20.0f,1100.0f),5.0f });
+	mCourse1->AddPoint({ Vector3(-5.0f,5.0f,100.0f),7.0f });
+	mCourse1->AddPoint({ Vector3(0.0f,10.0f,200.0f),7.0f });
+	mCourse1->AddPoint({ Vector3(5.0f,0.0f,300.0f),7.0f });
+	mCourse1->AddPoint({ Vector3(20.0f,0.0f,400.0f),5.0f });
+	mCourse1->AddPoint({ Vector3(-5.0f,-5.0f,500.0f),5.0f });
+	mCourse1->AddPoint({ Vector3(0.0f,20.0f,600.0f),7.0f });
+	mCourse1->AddPoint({ Vector3(0.0f,10.0f,700.0f),7.0f });
+	mCourse1->AddPoint({ Vector3(0.0f,10.0f,800.0f),7.0f });
+	mCourse1->AddPoint({ Vector3(0.0f,10.0f,900.0f),7.0f });
+	mCourse1->AddPoint({ Vector3(200.0f,5.0f,1000.0f),7.0f });
+	mCourse1->AddPoint({ Vector3(50.0f,20.0f,1100.0f),7.0f });
 	mCourse1->Create();
 	// コース2
 	mCourse2 = std::make_unique<Course>(this);
