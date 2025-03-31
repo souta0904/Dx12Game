@@ -21,7 +21,7 @@ void Player::Initialize() {
 	mCurrCourse = mGameScene->GetCourse1();
 	mCurrT = 0.0f;
 
-	mSpeed = 0.5f;
+	mSpeed = 0.3f;
 	mCourseRot = -MathUtil::kPiOver2;
 	mRotVel = 0.0f;
 	mRotSpeed = MathUtil::kPiOver2;
@@ -79,11 +79,12 @@ void Player::Update(InputBase* input, float deltaTime) {
 		mTransform.mRotate = Quaternion(Vector3::kUnitZ, mCourseRot + MathUtil::kPiOver2) * aroundInfo.mRotate;
 
 		// カメラ
-		float cameraT = mCurrT - 0.1f;
+		float cameraT = mCurrT + mT2Cam;
 		Course::CenterInfo centerInfo = mCurrCourse->GetCenterInfo(cameraT);
 		ModelCamera* camera = ModelBase::GetInstance().GetDefaultCamera();
-		camera->mTranslate = MathUtil::Lerp(camera->mTranslate, centerInfo.mPosition, 0.1f);
-		camera->mRotate = Slerp(camera->mRotate, centerInfo.mRotate, 0.1f);
+		camera->mTranslate = MathUtil::Lerp(camera->mTranslate, centerInfo.mPosition, 0.05f);
+		camera->mRotate = Slerp(camera->mRotate, centerInfo.mRotate, 0.05f);
+		camera->mFovY = MathUtil::kPiOver180 * 60.0f;
 
 		mTransform.Update();
 		mModel->Update(deltaTime);

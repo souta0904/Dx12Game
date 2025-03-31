@@ -50,6 +50,14 @@ void Course::Create() {
 			}
 		}
 	}
+	// 上下左右の線の最後
+	for (uint32_t i = 0; i < 4; ++i) {
+		AroundLine line;
+		line.mT = static_cast<float>(mSectionNum);
+		AroundInfo aLine = GetAroundInfo(line.mT, rad[i]);
+		line.mPosition = aLine.mPosition;
+		mAroundLines[i].emplace_back(line);
+	}
 
 	// 円
 	static const uint32_t kPointNum = 32;// 円を作る点の数
@@ -79,8 +87,9 @@ void Course::DrawPrimitive() {
 	LineRenderer& pr = LineRenderer::GetInstance();
 	Player* p = mGameScene->GetPlayer();
 	float pt = p->GetCurrT();
+	float t2Cam = p->GetT2Cam();
 	// 透過フラグ
-	bool useTransparent = false;
+	bool useTransparent = true;
 
 	// 中心線
 	for (CenterLine& line : mCenterLine) {
@@ -88,6 +97,10 @@ void Course::DrawPrimitive() {
 		if (useTransparent) {
 			a = CalcTransparent(pt, line.mT);
 			if (a <= 0.0f) {
+				continue;
+			}
+			// カメラに近いとき描画しない
+			if (std::fabs(pt + t2Cam - line.mT) <= 0.2f) {
 				continue;
 			}
 		}
@@ -133,7 +146,11 @@ Course::CenterInfo Course::GetCenterInfo(float t) {
 	CoursePoint p0, p1, p2, p3;
 	t = MathUtil::Clamp(t, 0.0f, static_cast<float>(mSectionNum));// t
 	uint32_t idx = MathUtil::Clamp(static_cast<uint32_t>(t), 0u, mSectionNum - 1);// 後ろの点のインデックス
-	t = t - static_cast<uint32_t>(t);// 小数部分
+	if (t >= mSectionNum) {
+		t = 1.0f;
+	} else {
+		t = t - static_cast<uint32_t>(t);// 小数部分
+	}
 	if (idx <= 0) {// 最初の区間
 		p0 = p1 = mCoursePoints[idx];
 		p2 = mCoursePoints[idx + 1];

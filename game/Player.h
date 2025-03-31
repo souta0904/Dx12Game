@@ -19,6 +19,7 @@ public:
 	const Transform& GetTransform() const { return mTransform; }
 	Course* GetCurrCourse() const { return mCurrCourse; }
 	float GetCurrT() const { return mCurrT; }
+	float GetT2Cam() const { return mT2Cam; }
 	float GetCourseRot() const { return mCourseRot; }
 
 private:
@@ -31,6 +32,8 @@ private:
 	// コース
 	Course* mCurrCourse;
 	float mCurrT;
+	// プレイヤーからカメラへのt
+	float mT2Cam = -0.05f;
 
 	float mSpeed;
 	float mCourseRot;

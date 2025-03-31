@@ -29,6 +29,6 @@ private:
 
 	float mSpeed = 1.0f;
 	float mCourseRot;
-	float mLife = 1.0f;
+	float mLife = 5.0f;
 	bool mIsDead = false;
 };

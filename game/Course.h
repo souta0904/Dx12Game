@@ -79,7 +79,7 @@ private:
 	std::vector<CoursePoint> mCoursePoints;
 	uint32_t mSectionNum;// 区間数
 
-	uint32_t mDivNum = 50;// 1区間の分割数
+	uint32_t mDivNum = 30;// 1区間の分割数
 	std::vector<CenterLine> mCenterLine;
 	std::vector<AroundLine> mAroundLines[4];// 上下左右
 
