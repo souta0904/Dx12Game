@@ -25,7 +25,10 @@ private:
 
 	// シーンのレンダリング先
 	std::unique_ptr<RenderTexture> mSceneRT;
+	std::unique_ptr<RootSignature> mCopyRS;
+	std::unique_ptr<PipelineState> mCopyPS;
 	// ポストエフェクト
+	bool mUsePE = true;
 	std::unique_ptr<RootSignature> mCRT_RS;
 	std::unique_ptr<PipelineState> mCRT_PS;
 	// ポストエフェクト用定数

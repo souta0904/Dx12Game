@@ -16,6 +16,25 @@ void Game::Initialize() {
 	mSceneRT = std::make_unique<RenderTexture>();
 	Window& window = Window::GetInstance();
 	mSceneRT->Create(window.GetClientWidth(), window.GetClientHeight(), true);
+
+	// CopyImage
+	mCopyRS = std::make_unique<RootSignature>(1, 1);
+	mCopyRS->GetParameter(0).InitDescriptorTable(1, D3D12_SHADER_VISIBILITY_PIXEL);
+	mCopyRS->GetParameter(0).InitDescriptorRange(0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+	mCopyRS->GetSampler(0) = DirectXCommon::gSamplerLinearWrap;
+	mCopyRS->Create();
+	PSOInit init;
+	init.mRootSignature = mCopyRS.get();
+	ResourceMgr& resourceMgr = ResourceMgr::GetInstance();
+	init.mVertexShader = resourceMgr.GetShader("resources/shaders/CopyImageVS.hlsl", "vs_6_0");
+	init.mPixelShader = resourceMgr.GetShader("resources/shaders/CopyImagePS.hlsl", "ps_6_0");
+	init.mBlendDesc = DirectXCommon::gBlendNone;
+	init.mRasterizerDesc = DirectXCommon::gRasterizerCullModeNone;
+	init.mDepthStencilDesc = DirectXCommon::gDepthDisable;
+	init.mPrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	mCopyPS = std::make_unique<PipelineState>();
+	mCopyPS->Create(init);
+
 	// ポストエフェクト
 	mCRT_RS = std::make_unique<RootSignature>(2, 1);
 	mCRT_RS->GetParameter(0).InitDescriptorTable(1, D3D12_SHADER_VISIBILITY_PIXEL);
@@ -23,16 +42,8 @@ void Game::Initialize() {
 	mCRT_RS->GetParameter(1).InitCBV(0, D3D12_SHADER_VISIBILITY_ALL);
 	mCRT_RS->GetSampler(0) = DirectXCommon::gSamplerLinearWrap;
 	mCRT_RS->Create();
-	PSOInit init;
 	init.mRootSignature = mCRT_RS.get();
-	ResourceMgr& resourceMgr = ResourceMgr::GetInstance();
-	init.mVertexShader = resourceMgr.GetShader("resources/shaders/CopyImageVS.hlsl", "vs_6_0");
-	//init.mPixelShader = resourceMgr.GetShader("resources/shaders/CopyImagePS.hlsl", "ps_6_0");// そのまま
 	init.mPixelShader = resourceMgr.GetShader("resources/shaders/CathodeRayTubePS.hlsl", "ps_6_0");
-	init.mBlendDesc = DirectXCommon::gBlendNone;
-	init.mRasterizerDesc = DirectXCommon::gRasterizerCullModeNone;
-	init.mDepthStencilDesc = DirectXCommon::gDepthDisable;
-	init.mPrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	mCRT_PS = std::make_unique<PipelineState>();
 	mCRT_PS->Create(init);
 	mCRT_CB = std::make_unique<ConstantBuffer>();
@@ -75,6 +86,7 @@ void Game::Update() {
 	// ポストエフェクト用定数を更新
 	mCRT_Constant.mTime += mDeltaTime;
 	ImGui::Begin("Post effect");
+	ImGui::Checkbox("Use", &mUsePE);
 	ImGui::DragFloat("Zoom", &mCRT_Constant.mZoom, 0.001f);
 	ImGui::DragFloat("Distortion", &mCRT_Constant.mDistortion, 0.001f);
 	ImGui::DragFloat("Noise", &mCRT_Constant.mNoise, 0.001f);
@@ -125,12 +137,19 @@ void Game::Draw() {
 	mSceneRT->End(cmdList);
 	// 最終的なレンダーターゲットへ描画
 	mDirectXBase->SetFinalRT();
-	mCRT_RS->Set(cmdList);
-	mCRT_PS->Set(cmdList);
-	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	mSceneRT->Set(cmdList, 0);
-	mCRT_CB->Update(mCRT_Constant);
-	mCRT_CB->Set(cmdList, 1);
+	if (mUsePE) {
+		mCRT_RS->Set(cmdList);
+		mCRT_PS->Set(cmdList);
+		cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		mSceneRT->Set(cmdList, 0);
+		mCRT_CB->Update(mCRT_Constant);
+		mCRT_CB->Set(cmdList, 1);
+	} else {
+		mCopyRS->Set(cmdList);
+		mCopyPS->Set(cmdList);
+		cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		mSceneRT->Set(cmdList, 0);
+	}
 	cmdList->DrawInstanced(3, 1, 0, 0);// ポストエフェクト
 	mImGuiWrapper->Draw(cmdList);// ImGui
 	mDirectXBase->ExecuteCmdList();
