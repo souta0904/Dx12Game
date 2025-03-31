@@ -66,6 +66,7 @@
     <ClCompile Include="math\Transform.cpp" />
     <ClCompile Include="engine\graphics\RenderTexture.cpp" />
     <ClCompile Include="engine\ImGuiWrapper.cpp" />
+    <ClCompile Include="game\PlayerBullet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Helper.h">
@@ -139,6 +140,7 @@
     <ClInclude Include="engine\graphics\RenderTexture.h" />
     <ClInclude Include="engine\graphics\Light.h" />
     <ClInclude Include="engine\ImGuiWrapper.h" />
+    <ClInclude Include="game\PlayerBullet.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="engine">

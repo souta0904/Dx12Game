@@ -135,6 +135,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\graphics\LineRenderer.cpp" />
     <ClCompile Include="game\Player.cpp" />
     <ClCompile Include="engine\graphics\RenderTexture.cpp" />
+    <ClCompile Include="game\PlayerBullet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\graphics\Light.h" />
@@ -176,6 +177,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\graphics\LineRenderer.h" />
     <ClInclude Include="game\Player.h" />
     <ClInclude Include="engine\graphics\RenderTexture.h" />
+    <ClInclude Include="game\PlayerBullet.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

@@ -57,6 +57,14 @@ void Player::Update(InputBase* input, float deltaTime) {
 			mCurrCourse = mGameScene->GetCourse2();
 			mCurrT = 0.0f;
 		}
+		// 弾を発射
+		mCooldown = MathUtil::Max(mCooldown - deltaTime, 0.0f);
+		if (input->GetKey(DIK_SPACE) && mCooldown <= 0.0f) {
+			std::unique_ptr<PlayerBullet> bullet = std::make_unique<PlayerBullet>(this);
+			bullet->Initialize();
+			mBullets.emplace_back(std::move(bullet));
+			mCooldown = 0.1f;
+		}
 
 		// 更新
 		mCurrT += mSpeed * deltaTime;
@@ -80,9 +88,26 @@ void Player::Update(InputBase* input, float deltaTime) {
 		mTransform.Update();
 		mModel->Update(deltaTime);
 
+		for (auto& bullet : mBullets) {
+			bullet->Update(input, deltaTime);
+		}
+
+		// 死んだ弾を削除
+		mBullets.erase(
+			std::remove_if(mBullets.begin(), mBullets.end(),
+				[](const std::unique_ptr<PlayerBullet>& bullet) {
+					return bullet->GetIsDead();
+				}),
+			mBullets.end()
+		);
+
 	}
 }
 
 void Player::Draw() {
 	mModel->Draw(mTransform.GetWorldMat());
+
+	for (auto& bullet : mBullets) {
+		bullet->Draw();
+	}
 }
