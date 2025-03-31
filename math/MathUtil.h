@@ -6,6 +6,7 @@
 class EulerAngle;
 class Matrix4;
 class Quaternion;
+class Vector3;
 
 // 数学関連のヘルパー
 namespace MathUtil {
@@ -75,5 +76,7 @@ namespace MathUtil {
 	Matrix4 ToMatrix4(const Quaternion& q);
 	Quaternion ToQuaternion(const EulerAngle& e);
 	Quaternion ToQuaternion(const Matrix4& m);
+
+	Quaternion QuaternionFromVector3(Vector3 a, Vector3 b);
 
 }

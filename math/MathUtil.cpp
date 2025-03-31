@@ -162,4 +162,27 @@ namespace MathUtil {
 		}
 	}
 
+	Quaternion QuaternionFromVector3(Vector3 a, Vector3 b) {
+		Quaternion result;
+		a.Normalize();
+		b.Normalize();
+		float dot = Dot(a, b);
+		if (dot > 1.0f - MathUtil::kEpsilon) {// aとbが同じ
+			return result;
+		} else if (dot < -1.0f + MathUtil::kEpsilon) {// aとbが逆
+			Vector3 ortho = { 1.0f,0.0f,0.0f };// 直交
+			if (std::fabs(a.x) > 0.9f) {
+				ortho = { 0.0f,1.0f,0.0f };
+			}
+			Vector3 axis = Normalize(Cross(a, ortho));
+			return Quaternion(axis, MathUtil::kPi);
+		}
+		Vector3 axis = Cross(a, b);
+		if (Length(axis) > 0.001f) {
+			axis.Normalize();
+			result = Quaternion(axis, acosf(dot));
+		}
+		return result;
+	}
+
 }

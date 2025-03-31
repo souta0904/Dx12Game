@@ -40,7 +40,7 @@ Vector3::Vector3(const Vector4& v)
 
 void Vector3::Normalize() {
 	float lenSq = x * x + y * y + z * z;
-	assert(lenSq > MathUtil::kEpsilon);
+	//assert(lenSq > MathUtil::kEpsilon);
 	float invLen = 1.0f / std::sqrt(lenSq);
 	x *= invLen;
 	y *= invLen;

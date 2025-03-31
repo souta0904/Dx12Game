@@ -3,67 +3,90 @@
 #include "Vector3.h"
 #include <vector>
 
-class Player;
+class GameScene;
 
-// 制御点
-struct ControlPoint {
-	Vector3 mPosition;
-	float mRadius;
-	//Vector3 mUp;// この制御点の上方向
+// スプライン曲線
+namespace CatmullRom {
+
+	template <typename T>
+	T GetPoint(const T& p0, const T& p1, const T& p2, const T& p3, float t) {
+		T a = -p0 + 3.0f * p1 - 3.0f * p2 + p3;
+		T b = 2.0f * p0 - 5.0f * p1 + 4.0f * p2 - p3;
+		T c = -p0 + p2;
+		T d = 2.0f * p1;
+		return 0.5f * (a * t * t * t + b * t * t + c * t + d);
+	}
+
+	template <typename T>
+	T GetTangent(const T& p0, const T& p1, const T& p2, const T& p3, float t) {
+		T a = -p0 + 3.0f * p1 - 3.0f * p2 + p3;
+		T b = 2.0f * p0 - 5.0f * p1 + 4.0f * p2 - p3;
+		T c = -p0 + p2;
+		return 0.5f * (3.0f * a * t * t + 2.0f * b * t + c);
+	}
+
 };
 
-// コース
+struct CoursePoint {
+	Vector3 mPosition;	// 座標
+	float mRadius;		// 半径
+	//float mRotate;	// 回転
+};
+
 class Course {
 public:
-	void AddControlPoint(ControlPoint cp) { mControlPoints.emplace_back(cp); }
-	// 追加された制御点からコースを作成
-	void Create();
-	// コースの描画
-	void DrawPrimitive();
-
-	// 中心
-	struct CenterInfo {
+	struct CenterInfo {// 中心
 		Vector3 mPosition;
 		float mRadius;
 		Quaternion mRotate;
 	};
-	// 周囲(円周)
-	struct CircumferenceInfo {
+	struct AroundInfo {// 円周上
 		Vector3 mPosition;
 		Quaternion mRotate;
 	};
-	CenterInfo GetCenterInfo(uint32_t section, float t);
-	CircumferenceInfo GetCircumferenceInfo(uint32_t section, float t, float angle);
-
-	const uint32_t GetSectionNum() const { return mSectionNum; }
-	void SetPlayer(Player* player) { mPlayer = player; }
-
-	// 始点と終点から向きを計算
-	static Quaternion CalcDirection(const Vector3& start, const Vector3& end);
-
 private:
-	// スプライン曲線
-	// パラメータtにおける値を計算
-	template <typename T>
-	T CatmullRom(const T& p0, const T& p1, const T& p2, const T& p3, float t) {
-		return 0.5f * ((-p0 + 3.0f * p1 - 3.0f * p2 + p3) * t * t * t + (2.0f * p0 - 5.0f * p1 + 4.0f * p2 - p3) * t * t + (-p0 + p2) * t + 2.0f * p1);
-	}
-
-private:
-	std::vector<ControlPoint> mControlPoints;// 制御点
-	uint32_t mSectionNum;// 区間の数
-
-	// 1区間の分割数
-	const uint32_t kDivNum = 40;
-	// 中心線用
-	struct LinePosition {
+	struct CenterLine {
 		Vector3 mStart;
 		Vector3 mEnd;
+		float mT;
 	};
-	std::vector<LinePosition> mCenterLine;// 点線
-	// 上下左右の線用
-	std::vector<Vector3> mLinePoints[4];
+	struct AroundLine {
+		Vector3 mPosition;
+		float mT;
+	};
+	struct Circle {
+		std::vector<Vector3> mPositions;
+		float mT;
+	};
 
-	// プレイヤー
-	Player* mPlayer;
+public:
+	Course(GameScene* gameScene);
+	void AddPoint(CoursePoint point);
+	void Create();
+	void Update() {}
+	void DrawPrimitive();
+
+	CenterInfo GetCenterInfo(float t);
+	AroundInfo GetAroundInfo(float t, float rad);
+
+	const uint32_t GetSectionNum() const { return mSectionNum; }
+
+private:
+	float CalcTransparent(float pt, float t);
+
+private:
+	GameScene* mGameScene;
+	std::vector<CoursePoint> mCoursePoints;
+	uint32_t mSectionNum;// 区間数
+
+	uint32_t mDivNum = 50;// 1区間の分割数
+	std::vector<CenterLine> mCenterLine;
+	std::vector<AroundLine> mAroundLines[4];// 上下左右
+
+	uint32_t mCircleNum = 3;// 1区間の円の数
+	std::vector<Circle> mCircles;
+
+	// 透過
+	float mFadeStart = 1.0f;
+	float mFadeEnd = 2.0f;
 };

@@ -1,145 +1,179 @@
 #include "Course.h"
+#include "GameScene.h"
 #include "graphics/LineRenderer.h"
 #include "MathUtil.h"
 #include "Player.h"
 #include <algorithm>
+#include <cassert>
 
-// 始点と終点から向きを計算
-Quaternion Course::CalcDirection(const Vector3& start, const Vector3& end) {
-	Quaternion result = {};
-	Vector3 direction = end - start;// 向き
-	if (Length(direction) > 0.001f) {
-		direction.Normalize();
-	}
-	Vector3 up = Cross(Vector3::kUnitZ, direction);
-	if (Length(up) > 0.001f) {
-		result = Quaternion(Normalize(up), acosf(Dot(Vector3::kUnitZ, direction)));
-	}
-	return result;
+Course::Course(GameScene* gameScene)
+	: mGameScene(gameScene) {
+
 }
 
-Course::CenterInfo Course::GetCenterInfo(uint32_t section, float t) {
-	CenterInfo result = {};
-	ControlPoint p0, p1, p2, p3;
-	section = MathUtil::Clamp<uint32_t>(section, 0, mSectionNum - 1);
-	if (section <= 0) {// 最初の区間の場合
-		p0 = p1 = mControlPoints[section];
-		p2 = mControlPoints[section + 1];
-		p3 = mControlPoints[section + 2];
-	} else if (section >= mSectionNum - 1) {// 最後の区間の場合
-		p0 = mControlPoints[section - 1];
-		p1 = mControlPoints[section];
-		p2 = p3 = mControlPoints[section + 1];
-	} else {
-		p0 = mControlPoints[section - 1];
-		p1 = mControlPoints[section];
-		p2 = mControlPoints[section + 1];
-		p3 = mControlPoints[section + 2];
-	}
-	// 座標、半径の計算
-	result.mPosition = CatmullRom(p0.mPosition, p1.mPosition, p2.mPosition, p3.mPosition, t);
-	result.mRadius = CatmullRom(p0.mRadius, p1.mRadius, p2.mRadius, p3.mRadius, t);
-	// 今の点と少し先の点から姿勢を計算
-	float deltaT = 0.001f;// 少し先
-	float nextT = t + deltaT;
-	if (nextT >= 1.0f) {
-		if (section < mSectionNum - 2) {
-			nextT -= 1.0f;
-			// 次の区間
-			++section;
-			p0 = mControlPoints[section - 1];
-			p1 = mControlPoints[section];
-			p2 = mControlPoints[section + 1];
-			p3 = mControlPoints[section + 2];
-		} else {
-			nextT = 1.0f;
-		}
-	}
-	Vector3 nextPosition = CatmullRom(p0.mPosition, p1.mPosition, p2.mPosition, p3.mPosition, nextT);// 少し先の座標
-	result.mRotate = CalcDirection(result.mPosition, nextPosition);
-	return result;
-}
-
-Course::CircumferenceInfo Course::GetCircumferenceInfo(uint32_t section, float t, float angle) {
-	CircumferenceInfo result = {};
-	CenterInfo centerInfo = GetCenterInfo(section, t);
-	result.mPosition = centerInfo.mPosition + Vector3(cosf(angle) * centerInfo.mRadius, sinf(angle) * centerInfo.mRadius, 0.0f) * centerInfo.mRotate;
-	// 今の点と少し先の点から姿勢を計算
-	float deltaT = 0.001f;// 少し先
-	float nextT = t + deltaT;
-	if (nextT >= 1.0f) {
-		if (section < mSectionNum - 1) {
-			nextT -= 1.0f;
-			// 次の区間
-			++section;
-		} else {
-			nextT = 1.0f;
-		}
-	}
-	CenterInfo nextCenterInfo = GetCenterInfo(section, nextT);
-	Vector3 nextPosition = nextCenterInfo.mPosition + Vector3(cosf(angle) * nextCenterInfo.mRadius, sinf(angle) * nextCenterInfo.mRadius, 0.0f) * nextCenterInfo.mRotate;
-	result.mRotate = CalcDirection(result.mPosition, nextPosition);
-	return result;
+void Course::AddPoint(CoursePoint point) {
+	mCoursePoints.emplace_back(point);
 }
 
 void Course::Create() {
-	mSectionNum = static_cast<uint32_t>(mControlPoints.size()) - 1;
-	for (uint32_t section = 0; section < GetSectionNum(); ++section) {
-		// 中心線
-		for (uint32_t i = 0; i < kDivNum; ++i) {
-			CenterInfo currInfo = GetCenterInfo(section, static_cast<float>(i) / kDivNum);
-			CenterInfo nextInfo = GetCenterInfo(section, (i + 0.25f) / kDivNum);// 長さ1/4の点線
-			LinePosition line = { currInfo.mPosition, nextInfo.mPosition };
-			mCenterLine.emplace_back(line);
-		}
-		// 上下左右の線
-		float angles[] = { MathUtil::kPiOver2,-MathUtil::kPiOver2,MathUtil::kPi,0.0f };
-		for (uint32_t i = 0; i < 4; ++i) {
-			for (uint32_t j = 0; j < kDivNum; ++j) {
-				CircumferenceInfo currInfo = GetCircumferenceInfo(section, static_cast<float>(j) / kDivNum, angles[i]);
-				mLinePoints[i].emplace_back(currInfo.mPosition);
+	// クリア
+	mCenterLine.clear();
+	for (uint32_t i = 0; i < 4; ++i) {
+		mAroundLines[i].clear();
+	}
+	mCircles.clear();
+
+	// ライン
+	mSectionNum = static_cast<uint32_t>(mCoursePoints.size()) - 1;// 区間数
+	float rad[4] = { MathUtil::kPiOver2,-MathUtil::kPiOver2,MathUtil::kPi,0.0f };// 上下左右の角度
+	for (uint32_t section = 0; section < mSectionNum; ++section) {
+		for (uint32_t i = 0; i < mDivNum; ++i) {
+			// 中心線
+			static const float deltaT = 0.5f;// 点線なので長さ1/4
+			float st = section + static_cast<float>(i) / mDivNum;
+			float et = st + deltaT / mDivNum;
+			CenterInfo sInfo = GetCenterInfo(st);// start
+			CenterInfo eInfo = GetCenterInfo(et);// end
+			CenterLine cLine;
+			cLine.mStart = sInfo.mPosition;
+			cLine.mEnd = eInfo.mPosition;
+			cLine.mT = st;
+			mCenterLine.emplace_back(cLine);
+
+			// 上下左右の線
+			for (uint32_t j = 0; j < 4; ++j) {
+				AroundInfo aLine = GetAroundInfo(st, rad[j]);
+				AroundLine line;
+				line.mPosition = aLine.mPosition;
+				line.mT = st;
+				mAroundLines[j].emplace_back(line);
 			}
 		}
 	}
+
+	// 円
+	static const uint32_t kPointNum = 32;// 円を作る点の数
+	for (uint32_t section = 0; section < mSectionNum; ++section) {
+		for (uint32_t i = 0; i < mCircleNum; ++i) {
+			Circle circle;
+			circle.mT = section + 1.0f / mCircleNum * i;
+			for (uint32_t j = 0; j < kPointNum; ++j) {
+				float r = MathUtil::k2Pi / kPointNum * j;
+				AroundInfo info = GetAroundInfo(circle.mT, r);
+				circle.mPositions.push_back(info.mPosition);
+			}
+			mCircles.emplace_back(circle);
+		}
+	}
+	Circle circle;// 最後
+	circle.mT = static_cast<float>(mSectionNum);
+	for (uint32_t i = 0; i < kPointNum; ++i) {
+		float r = MathUtil::k2Pi / kPointNum * i;
+		AroundInfo info = GetAroundInfo(circle.mT, r);
+		circle.mPositions.push_back(info.mPosition);
+	}
+	mCircles.emplace_back(circle);
 }
 
 void Course::DrawPrimitive() {
 	LineRenderer& pr = LineRenderer::GetInstance();
+	Player* p = mGameScene->GetPlayer();
+	float pt = p->GetT();
+	// 透過フラグ
+	bool useTransparent = false;
 
-	int32_t currSection = mPlayer->GetCurrSection();
-	float t = mPlayer->GetT();
-	float pos = currSection * kDivNum + t * kDivNum;// プレイヤーがいる場所
-	// フェード
-	int32_t start = kDivNum * 0;// 0区間先
-	int32_t end = start + kDivNum * 2;// 2区間先
 	// 中心線
-	for (int32_t i = 0; i < mCenterLine.size(); ++i) {
-		if (i > pos + end ||// 前
-			i < pos - end) {// 後
-			continue;
-		}
+	for (CenterLine& line : mCenterLine) {
 		float a = 1.0f;
-		if (i >= pos + start) {// 前
-			a = 1.0f - (i - (pos + start)) / (end - start);
-		} else if (i <= pos - start) {// 後
-			a = 1.0f - (i - (pos - start)) / -(end - start);
-		}
-		pr.DrawLine3(mCenterLine[i].mStart, mCenterLine[i].mEnd, Vector4(1.0f, 1.0f, 1.0f, a));
-	}
-	// 上下左右の線
-	for (uint32_t i = 0; i < 4; ++i) {
-		for (int32_t j = 0; j < mLinePoints[i].size() - 1; ++j) {
-			if (j > pos + end ||// 前
-				j < pos - end) {// 後
+		if (useTransparent) {
+			a = CalcTransparent(pt, line.mT);
+			if (a <= 0.0f) {
 				continue;
 			}
+		}
+		pr.DrawLine3(line.mStart, line.mEnd, Vector4(1.0f, 1.0f, 1.0f, a));
+	}
+
+	// 上下左右の線
+	for (uint32_t i = 0; i < 4; ++i) {
+		for (int32_t j = 0; j < mAroundLines[i].size() - 1; ++j) {
+			AroundLine& line = mAroundLines[i][j];
 			float a = 1.0f;
-			if (j >= pos + start) {// 前
-				a = 1.0f - (j - (pos + start)) / (end - start);
-			} else if (j <= pos - start) {// 後
-				a = 1.0f - (j - (pos - start)) / -(end - start);
+			if (useTransparent) {
+				a = CalcTransparent(pt, line.mT);
+				if (a <= 0.0f) {
+					continue;
+				}
 			}
-			pr.DrawLine3(mLinePoints[i][j], mLinePoints[i][j + 1], Vector4(1.0f, 1.0f, 1.0f, a));
+			pr.DrawLine3(line.mPosition, mAroundLines[i][j + 1].mPosition, Vector4(1.0f, 1.0f, 1.0f, a));
 		}
 	}
+
+	// 円
+	for (Circle& circle : mCircles) {
+		float a = 1.0f;
+		if (useTransparent) {
+			a = CalcTransparent(pt, circle.mT);
+			if (a <= 0.0f) {
+				continue;
+			}
+		}
+		for (uint32_t i = 0; i < circle.mPositions.size(); ++i) {
+			if (i < circle.mPositions.size() - 1) {
+				pr.DrawLine3(circle.mPositions[i], circle.mPositions[i + 1], Vector4(1.0f, 1.0f, 1.0f, a));
+			} else {// 最後
+				pr.DrawLine3(circle.mPositions[i], circle.mPositions[0], Vector4(1.0f, 1.0f, 1.0f, a));
+			}
+		}
+	}
+}
+
+Course::CenterInfo Course::GetCenterInfo(float t) {
+	CenterInfo result = {};
+	CoursePoint p0, p1, p2, p3;
+	t = MathUtil::Clamp(t, 0.0f, static_cast<float>(mSectionNum));// t
+	uint32_t idx = MathUtil::Clamp(static_cast<uint32_t>(t), 0u, mSectionNum - 1);// 後ろの点のインデックス
+	t = t - static_cast<uint32_t>(t);// 小数部分
+	if (idx <= 0) {// 最初の区間
+		p0 = p1 = mCoursePoints[idx];
+		p2 = mCoursePoints[idx + 1];
+		p3 = mCoursePoints[idx + 2];
+	} else if (idx >= mSectionNum - 1) {// 最後の区間
+		p0 = mCoursePoints[idx - 1];
+		p1 = mCoursePoints[idx];
+		p2 = p3 = mCoursePoints[idx + 1];
+	} else {
+		p0 = mCoursePoints[idx - 1];
+		p1 = mCoursePoints[idx];
+		p2 = mCoursePoints[idx + 1];
+		p3 = mCoursePoints[idx + 2];
+	}
+	// 座標と半径
+	result.mPosition = CatmullRom::GetPoint(p0.mPosition, p1.mPosition, p2.mPosition, p3.mPosition, t);
+	result.mRadius = CatmullRom::GetPoint(p0.mRadius, p1.mRadius, p2.mRadius, p3.mRadius, t);
+	// 回転
+	Vector3 tan = CatmullRom::GetTangent(p0.mPosition, p1.mPosition, p2.mPosition, p3.mPosition, t);
+	result.mRotate = MathUtil::QuaternionFromVector3(Vector3::kUnitZ, tan);
+	return result;
+}
+
+Course::AroundInfo Course::GetAroundInfo(float t, float rad) {
+	AroundInfo result = {};
+	CenterInfo cInfo = GetCenterInfo(t);
+	result.mPosition = cInfo.mPosition + Vector3(std::cosf(rad) * cInfo.mRadius, std::sinf(rad) * cInfo.mRadius, 0.0f) * cInfo.mRotate;
+	result.mRotate = cInfo.mRotate;
+	return result;
+}
+
+// 透過を計算
+float Course::CalcTransparent(float pt, float t) {
+	if (t > pt + mFadeEnd ||
+		t < pt - mFadeEnd) {
+		return 0.0f;
+	}
+	if (t > pt + mFadeStart ||
+		t < pt + mFadeStart) {
+		return 1.0f - (std::fabs(t - pt) - mFadeStart) / (mFadeEnd - mFadeStart);
+	}
+	return 1.0f;
 }

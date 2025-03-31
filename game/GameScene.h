@@ -18,7 +18,12 @@ public:
 	void DrawPrimitive() override;
 	void DrawForeground() override;
 
+	Course* GetCourse1() const { return mCourse1.get(); }
+	Course* GetCourse2() const { return mCourse2.get(); }
+	Player* GetPlayer() const { return mPlayer.get(); }
+
 private:
-	std::unique_ptr<Course> mCourse;
+	std::unique_ptr<Course> mCourse1;
+	std::unique_ptr<Course> mCourse2;
 	std::unique_ptr<Player> mPlayer;
 };

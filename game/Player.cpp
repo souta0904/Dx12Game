@@ -1,8 +1,14 @@
 #include "Player.h"
 #include "Course.h"
+#include "GameScene.h"
 #include "graphics/ModelBase.h"
 #include "graphics/ResourceMgr.h"
 #include "input/InputBase.h"
+
+Player::Player(GameScene* gameScene)
+	: mGameScene(gameScene) {
+
+}
 
 void Player::Initialize() {
 	mModel = std::make_unique<ModelInstance>();
@@ -11,73 +17,69 @@ void Player::Initialize() {
 	//mModel->Create(ResourceMgr::GetInstance().GetModel("resources/walk.gltf"));
 	//mModel->PlayAtName("Armature|mixamo.com|Layer0", 3.0f);
 	//mModel->PlayAtIdx(0, 3.0f);
-	mSpeed = 0.25f;
-	mAngle = -MathUtil::kPiOver2;
-	mAngleSpeed = MathUtil::kPiOver2;
+
+	mCurrCourse = mGameScene->GetCourse1();
+	mCurrT = 0.0f;
+
+	mSpeed = 0.5f;
+	mCourseRot = -MathUtil::kPiOver2;
+	mRotVel = 0.0f;
+	mRotSpeed = MathUtil::kPiOver2;
+
+	// カメラ
+	Course::CenterInfo centerInfo = mCurrCourse->GetCenterInfo(0.0f);
+	ModelCamera* camera = ModelBase::GetInstance().GetDefaultCamera();
+	camera->mTranslate = centerInfo.mPosition;
+	camera->mRotate = centerInfo.mRotate;
 }
 
 void Player::Update(InputBase* input, float deltaTime) {
-	if (mCurrCource) {
-		mAngleVel = 0.0f;
+	if (mCurrCourse) {
+
+		// 入力
+		mRotVel = 0.0f;
 		if (input->GetKey(DIK_A)) {
-			mAngleVel -= mAngleSpeed * deltaTime;
+			mRotVel -= mRotSpeed;
 		}
 		if (input->GetKey(DIK_D)) {
-			mAngleVel += mAngleSpeed * deltaTime;
+			mRotVel += mRotSpeed;
 		}
-		mAngle += mAngleVel;
-
-		mT += mSpeed * deltaTime;
-		if (mT >= 1.0f) {// 次の区間へ
-			if (mCurrSection < mCurrCource->GetSectionNum() - 1) {
-				++mCurrSection;
-				mT -= 1.0f;
-			} else {
-				mT = 1.0f;// 最後
-			}
-		}
-		// リセット(デバッグ用)
+		// リセット
 		if (input->GetKeyDown(DIK_R)) {
-			mCurrSection = 0;
-			mT = 0.0f;
+			mCurrT = 0.0f;
+		}
+		// コース変更
+		if (input->GetKeyDown(DIK_1)) {
+			mCurrCourse = mGameScene->GetCourse1();
+			mCurrT = 0.0f;
+		}
+		if (input->GetKeyDown(DIK_2)) {
+			mCurrCourse = mGameScene->GetCourse2();
+			mCurrT = 0.0f;
 		}
 
-		// 座標、回転
-		Course::CircumferenceInfo courceInfo = mCurrCource->GetCircumferenceInfo(mCurrSection, mT, mAngle);
-		mTransform.mTranslate = courceInfo.mPosition;
-		mTransform.mRotate = Quaternion(Vector3::kUnitZ, mAngle + MathUtil::kPiOver2) * courceInfo.mRotate;
+		// 更新
+		mCurrT += mSpeed * deltaTime;
+		if (mCurrT > mCurrCourse->GetSectionNum()) {
+			mCurrT = static_cast<float>(mCurrCourse->GetSectionNum());
+		}
+		mCourseRot += mRotVel * deltaTime;
+
+		// 座標と回転
+		Course::AroundInfo aroundInfo = mCurrCourse->GetAroundInfo(mCurrT, mCourseRot);
+		mTransform.mTranslate = aroundInfo.mPosition;
+		mTransform.mRotate = Quaternion(Vector3::kUnitZ, mCourseRot + MathUtil::kPiOver2) * aroundInfo.mRotate;
 
 		// カメラ
-		float cameraT = mT - 0.1f;
-		uint32_t cameraSection = mCurrSection;
-		if (cameraT <= 0.0f) {
-			if (cameraSection > 0) {
-				cameraT += 1.0f;
-				--cameraSection;
-			} else {
-				cameraT = 0.0f;
-				cameraSection = 0;
-			}
-		}
-		Course::CenterInfo centerInfo = mCurrCource->GetCenterInfo(cameraSection, cameraT);
-		float nextT = cameraT += 0.25f;
-		if (nextT >= 1.0f) {
-			if (cameraSection < mCurrCource->GetSectionNum() - 1) {
-				nextT -= 1.0f;
-				// 次の区間
-				++cameraSection;
-			} else {
-				nextT = 1.0f;
-			}
-		}
-		Course::CenterInfo nextInfo = mCurrCource->GetCenterInfo(cameraSection, nextT);
-		Quaternion rotate = Course::CalcDirection(centerInfo.mPosition, nextInfo.mPosition);
+		float cameraT = mCurrT - 0.1f;
+		Course::CenterInfo centerInfo = mCurrCourse->GetCenterInfo(cameraT);
 		ModelCamera* camera = ModelBase::GetInstance().GetDefaultCamera();
-		camera->mTranslate = centerInfo.mPosition;
-		camera->mRotate = rotate;
+		camera->mTranslate = MathUtil::Lerp(camera->mTranslate, centerInfo.mPosition, 0.1f);
+		camera->mRotate = Slerp(camera->mRotate, centerInfo.mRotate, 0.1f);
 
 		mTransform.Update();
 		mModel->Update(deltaTime);
+
 	}
 }
 
