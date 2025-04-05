@@ -91,6 +91,11 @@ bool Model::Create(const std::string& path) {
 	return true;
 }
 
+Material* Model::GetMaterial(uint32_t idx) {
+	assert(idx >= 0 && idx < mSrcMaterials.size());
+	return mSrcMaterials[idx].get();
+}
+
 // 再帰でノードを作成
 int32_t Model::CreateNode(aiNode* srcNode, const std::optional<int32_t>& parent) {
 	Node node = {};

@@ -156,6 +156,7 @@ public:
 		Matrix4 mInverseBindMat;// 逆バインドポーズ行列
 	};
 	bool Create(const std::string& path);
+	Material* GetMaterial(uint32_t idx);
 private:
 	// 再帰でノードを作成
 	int32_t CreateNode(aiNode* srcNode, const std::optional<int32_t>& parent);

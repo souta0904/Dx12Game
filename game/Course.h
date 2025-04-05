@@ -60,6 +60,8 @@ private:
 	};
 
 public:
+	static float CalcTransparent(float pt, float t);
+
 	Course(GameScene* gameScene);
 	void AddPoint(CoursePoint point);
 	void Create();
@@ -67,12 +69,14 @@ public:
 	void DrawPrimitive();
 
 	CenterInfo GetCenterInfo(float t);
-	AroundInfo GetAroundInfo(float t, float rad);
+	AroundInfo GetAroundInfo(float t, float rad, float margin = 0.0f);
 
 	const uint32_t GetSectionNum() const { return mSectionNum; }
 
-private:
-	float CalcTransparent(float pt, float t);
+public:
+	static const float kDistFromAround;
+	static const float kFadeStart;
+	static const float kFadeEnd;
 
 private:
 	GameScene* mGameScene;
@@ -85,8 +89,4 @@ private:
 
 	uint32_t mCircleNum = 3;// 1区間の円の数
 	std::vector<Circle> mCircles;
-
-	// 透過
-	float mFadeStart = 1.0f;
-	float mFadeEnd = 2.0f;
 };

@@ -11,7 +11,12 @@ PlayerBullet::PlayerBullet(Player* player)
 
 void PlayerBullet::Initialize() {
 	mModel = std::make_unique<ModelInstance>();
-	mModel->Create(ResourceMgr::GetInstance().GetModel("resources/player.gltf"));
+	mModel->Create(ResourceMgr::GetInstance().GetModel("resources/bullet.gltf"));
+	mMaterial = std::make_unique<Material>();
+	mMaterial->mColor = mModel->GetModel()->GetMaterial(0)->mColor;// 色
+	mMaterial->Create();
+	mModel->SetMaterial(0, mMaterial.get());
+	mModel->SetFlags(PSOFlags::kNormalBlend);// 透過する
 
 	mTransform = mPlayer->GetTransform();
 	mCurrCourse = mPlayer->GetCurrCourse();
@@ -31,13 +36,20 @@ void PlayerBullet::Update(InputBase*, float deltaTime) {
 	}
 
 	// 座標と回転
-	Course::AroundInfo aroundInfo = mCurrCourse->GetAroundInfo(mCurrT, mCourseRot);
+	Course::AroundInfo aroundInfo = mCurrCourse->GetAroundInfo(mCurrT, mCourseRot, Course::kDistFromAround);
 	mTransform.mTranslate = aroundInfo.mPosition;
 	mTransform.mRotate = Quaternion(Vector3::kUnitZ, mCourseRot + MathUtil::kPiOver2) * aroundInfo.mRotate;
 
 	mTransform.Update();
+
+	// 透明度の計算
+	float pt = mPlayer->GetCurrT();
+	mMaterial->mColor.w = Course::CalcTransparent(pt, mCurrT);
+	mMaterial->Update();
 }
 
 void PlayerBullet::Draw() {
-	mModel->Draw(mTransform.GetWorldMat());
+	if (mMaterial->mColor.w > 0.0f) {
+		mModel->Draw(mTransform.GetWorldMat());
+	}
 }

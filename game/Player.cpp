@@ -74,7 +74,7 @@ void Player::Update(InputBase* input, float deltaTime) {
 		mCourseRot += mRotVel * deltaTime;
 
 		// 座標と回転
-		Course::AroundInfo aroundInfo = mCurrCourse->GetAroundInfo(mCurrT, mCourseRot);
+		Course::AroundInfo aroundInfo = mCurrCourse->GetAroundInfo(mCurrT, mCourseRot, Course::kDistFromAround);
 		mTransform.mTranslate = aroundInfo.mPosition;
 		mTransform.mRotate = Quaternion(Vector3::kUnitZ, mCourseRot + MathUtil::kPiOver2) * aroundInfo.mRotate;
 

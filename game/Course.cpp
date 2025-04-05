@@ -6,6 +6,23 @@
 #include <algorithm>
 #include <cassert>
 
+const float Course::kDistFromAround = 0.5f;
+const float Course::kFadeStart = 1.0f;
+const float Course::kFadeEnd = 2.0f;
+
+// 透過を計算
+float Course::CalcTransparent(float pt, float t) {
+	if (t > pt + kFadeEnd ||
+		t < pt - kFadeEnd) {
+		return 0.0f;
+	}
+	if (t > pt + kFadeStart ||
+		t < pt + kFadeStart) {
+		return 1.0f - (std::fabs(t - pt) - kFadeStart) / (kFadeEnd - kFadeStart);
+	}
+	return 1.0f;
+}
+
 Course::Course(GameScene* gameScene)
 	: mGameScene(gameScene) {
 
@@ -174,23 +191,10 @@ Course::CenterInfo Course::GetCenterInfo(float t) {
 	return result;
 }
 
-Course::AroundInfo Course::GetAroundInfo(float t, float rad) {
+Course::AroundInfo Course::GetAroundInfo(float t, float rad, float margin) {
 	AroundInfo result = {};
 	CenterInfo cInfo = GetCenterInfo(t);
-	result.mPosition = cInfo.mPosition + Vector3(std::cosf(rad) * cInfo.mRadius, std::sinf(rad) * cInfo.mRadius, 0.0f) * cInfo.mRotate;
+	result.mPosition = cInfo.mPosition + Vector3(std::cosf(rad) * (cInfo.mRadius - margin), std::sinf(rad) * (cInfo.mRadius - margin), 0.0f) * cInfo.mRotate;
 	result.mRotate = cInfo.mRotate;
 	return result;
-}
-
-// 透過を計算
-float Course::CalcTransparent(float pt, float t) {
-	if (t > pt + mFadeEnd ||
-		t < pt - mFadeEnd) {
-		return 0.0f;
-	}
-	if (t > pt + mFadeStart ||
-		t < pt + mFadeStart) {
-		return 1.0f - (std::fabs(t - pt) - mFadeStart) / (mFadeEnd - mFadeStart);
-	}
-	return 1.0f;
 }

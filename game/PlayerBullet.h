@@ -22,6 +22,7 @@ private:
 	Player* mPlayer;
 	Transform mTransform;
 	std::unique_ptr<ModelInstance> mModel;
+	std::unique_ptr<Material> mMaterial;
 
 	// コース
 	Course* mCurrCourse;
