@@ -1,37 +1,19 @@
 #pragma once
-#include "CircleCollider.h"
-#include "graphics/Model.h"
-#include "Transform.h"
-#include <cstdint>
+#include "CourseObj.h"
 
-class GameScene;
-class InputBase;
-class Course;
 class Player;
 
 // 敵
-class Enemy : public CircleCollider {
+class Enemy : public CourseObj {
 public:
 	Enemy(GameScene* gameScene);
-	void Initialize(Course* course, float t, float rot);
-	void Update(InputBase* input, float deltaTime);
-	void Draw();
-
-	void OnCollision() override { mIsDead = true; }
-
-	bool GetIsDead() const { return mIsDead; }
-
+	void Initialize() override;
+	void Update(InputBase* input, float deltaTime) override;
+	void Draw() override;
+	void OnCollision(CourseObj* obj) override;
 private:
-	GameScene* mGameScene;
-	Transform mTransform;
+	Player* mPlayer;
 	std::unique_ptr<ModelInstance> mModel;
 	std::unique_ptr<Material> mMaterial;
-
-	// コース
-	Course* mCurrCourse;
-	float mCurrT;
-
 	float mSpeed = -0.1f;
-	float mCourseRot;
-	bool mIsDead = false;
 };

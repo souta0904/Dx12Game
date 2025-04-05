@@ -1,43 +1,24 @@
 #pragma once
-#include "graphics/Model.h"
+#include "CourseObj.h"
 #include "PlayerBullet.h"
-#include "Transform.h"
-#include <cstdint>
-
-class GameScene;
-class InputBase;
-class Course;
 
 // プレイヤー
-class Player {
+class Player : public CourseObj {
 public:
 	Player(GameScene* gameScene);
-	void Initialize();
-	void Update(InputBase* input, float deltaTime);
-	void Draw();
-
-	const Transform& GetTransform() const { return mTransform; }
-	Course* GetCurrCourse() const { return mCurrCourse; }
-	float GetCurrT() const { return mCurrT; }
+	void Initialize() override;
+	void Update(InputBase* input, float deltaTime) override;
+	void Draw() override;
+	void OnCollision(CourseObj*) override {}
 	float GetT2Cam() const { return mT2Cam; }
-	float GetCourseRot() const { return mCourseRot; }
-	const std::vector<std::unique_ptr<PlayerBullet>>& GetBullets() const { return mBullets; }
-
 private:
-	GameScene* mGameScene;
-	Transform mTransform;
 	std::unique_ptr<ModelInstance> mModel;
-	std::vector<std::unique_ptr<PlayerBullet>> mBullets;
-	float mCooldown;
-
-	// コース
-	Course* mCurrCourse;
-	float mCurrT;
-	// プレイヤーからカメラへのt
-	float mT2Cam = -0.05f;
-
-	float mSpeed;
-	float mCourseRot;
+	float mHP;
+	float mTSpeed;
 	float mRotVel;
 	float mRotSpeed;
+	// カメラへのt
+	float mT2Cam = -0.05f;
+	// 弾
+	float mCooldown;
 };

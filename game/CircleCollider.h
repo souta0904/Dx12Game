@@ -4,8 +4,6 @@
 // 円
 class CircleCollider {
 public:
-	virtual void OnCollision() = 0;
-
 	const Vector3& GetCenter() const { return mCenter; }
 	float GetRadius() const { return mRadius; }
 	void SetCenter(const Vector3& center) { mCenter = center; }

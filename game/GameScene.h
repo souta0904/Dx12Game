@@ -1,9 +1,10 @@
 #pragma once
 #include "scene/IScene.h"
 #include "Course.h"
-#include "Enemy.h"
-#include "Player.h"
+#include "CourseObj.h"
 #include <memory>
+
+class Player;
 
 // ゲームプレイ
 class GameScene : public IScene {
@@ -19,13 +20,16 @@ public:
 	void DrawPrimitive() override;
 	void DrawForeground() override;
 
-	Course* GetCourse1() const { return mCourse1.get(); }
-	Course* GetCourse2() const { return mCourse2.get(); }
-	Player* GetPlayer() const { return mPlayer.get(); }
+	void AddObject(std::unique_ptr<CourseObj> obj);
+	Course* GetCurrCourse() const { return mCurrCourse; }
+	Player* GetPlayer() const { return mPlayer; }
 
 private:
 	std::unique_ptr<Course> mCourse1;
 	std::unique_ptr<Course> mCourse2;
-	std::unique_ptr<Player> mPlayer;
-	std::vector<std::unique_ptr<Enemy>> mEnemies;
+	Course* mCurrCourse;
+	bool mIsUpdating = false;
+	std::vector<std::unique_ptr<CourseObj>> mObjects;
+	std::vector<std::unique_ptr<CourseObj>> mWaitObjs;
+	Player* mPlayer;
 };

@@ -3,51 +3,64 @@
 #include "GameScene.h"
 #include "graphics/ResourceMgr.h"
 #include "MathUtil.h"
+#include "Player.h"
 
 Enemy::Enemy(GameScene* gameScene)
-	: mGameScene(gameScene) {
+	: CourseObj(gameScene) {
 
 }
 
-void Enemy::Initialize(Course* course, float t, float rot) {
-	mCurrCourse = course;
-	mCurrT = t;
-	mCourseRot = rot;
-
+void Enemy::Initialize() {
+	mPlayer = mGameScene->GetPlayer();
+	// モデル
 	mModel = std::make_unique<ModelInstance>();
 	mModel->Create(ResourceMgr::GetInstance().GetModel("resources/bullet.gltf"));
-	// マテリアル作成
+	// マテリアル
 	mMaterial = std::make_unique<Material>();
-	mMaterial->mColor = mModel->GetModel()->GetMaterial(0)->mColor;// 色
+	mMaterial->mColor = mModel->GetModel()->GetMaterial(0)->mColor;
 	mMaterial->Create();
 	mModel->SetMaterial(0, mMaterial.get());
-	mModel->SetFlags(PSOFlags::kNormalBlend);// 透過する
+	mModel->SetFlags(PSOFlags::kNormalBlend);
 
+	mType = ObjType::kEnemy;
 	SetRadius(1.0f);
 }
 
 void Enemy::Update(InputBase*, float deltaTime) {
-	mCurrT += mSpeed * deltaTime;
-	if (mCurrT > mCurrCourse->GetSectionNum()) {
-		mIsDead = true;
+	if (!mIsDead) {
+		mCurrT += mSpeed * deltaTime;
+		// コース外で死亡
+		if (mCurrT > mCurrCourse->GetSectionNum() ||
+			mCurrT <= 0.0f) {
+			mIsDead = true;
+		}
+
+		// 座標と回転
+		Course::AroundInfo aroundInfo = mCurrCourse->GetAroundInfo(mCurrT, mCourseRot, Course::kDistFromAround);
+		mTransform.mTranslate = aroundInfo.mPosition;
+		mTransform.mRotate = Quaternion(Vector3::kUnitY, MathUtil::kPi) * Quaternion(Vector3::kUnitZ, mCourseRot + MathUtil::kPiOver2) * aroundInfo.mRotate;
+
+		// マテリアル
+		float pt = mPlayer->GetCurrT();
+		mMaterial->mColor.w = Course::CalcTransparent(pt, mCurrT);
+		mMaterial->Update();
+
+		mTransform.Update();
+		SetCenter(mTransform.mTranslate);
 	}
-
-	// 座標と回転
-	Course::AroundInfo aroundInfo = mCurrCourse->GetAroundInfo(mCurrT, mCourseRot, Course::kDistFromAround);
-	mTransform.mTranslate = aroundInfo.mPosition;
-	mTransform.mRotate = Quaternion(Vector3::kUnitZ, mCourseRot + MathUtil::kPiOver2) * aroundInfo.mRotate;
-
-	mTransform.Update();
-	SetCenter(mTransform.mTranslate);
-
-	// 透明度の計算
-	float pt = mGameScene->GetPlayer()->GetCurrT();
-	mMaterial->mColor.w = Course::CalcTransparent(pt, mCurrT);
-	mMaterial->Update();
 }
 
 void Enemy::Draw() {
-	if (mMaterial->mColor.w > 0.0f && !mIsDead) {
-		mModel->Draw(mTransform.GetWorldMat());
+	if (!mIsDead) {
+		if (mMaterial->mColor.w > 0.0f) {// 範囲外
+			mModel->Draw(mTransform.GetWorldMat());
+		}
+	}
+}
+
+void Enemy::OnCollision(CourseObj* obj) {
+	// プレイヤーの弾であれば死亡
+	if (obj->GetType() == ObjType::kPBullet) {
+		mIsDead = true;
 	}
 }

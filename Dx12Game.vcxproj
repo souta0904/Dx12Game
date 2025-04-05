@@ -139,6 +139,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="game\PlayerBullet.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="game\CourseObj.h" />
     <ClInclude Include="game\CircleCollider.h" />
     <ClInclude Include="game\Enemy.h" />
     <ClInclude Include="engine\graphics\Light.h" />

@@ -144,6 +144,7 @@
     <ClInclude Include="game\PlayerBullet.h" />
     <ClInclude Include="game\Enemy.h" />
     <ClInclude Include="game\CircleCollider.h" />
+    <ClInclude Include="game\CourseObj.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="engine">
