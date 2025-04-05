@@ -157,6 +157,7 @@ public:
 	};
 	bool Create(const std::string& path);
 	Material* GetMaterial(uint32_t idx);
+	uint32_t GetMaterialNum() const { return static_cast<uint32_t>(mSrcMaterials.size()); }
 private:
 	// 再帰でノードを作成
 	int32_t CreateNode(aiNode* srcNode, const std::optional<int32_t>& parent);

@@ -9,20 +9,20 @@ class InputBase;
 class Course;
 class Player;
 
-// プレイヤー
-class PlayerBullet : public CircleCollider {
+// 敵
+class Enemy : public CircleCollider {
 public:
-	PlayerBullet(Player* player);
-	void Initialize();
+	Enemy(GameScene* gameScene);
+	void Initialize(Course* course, float t, float rot);
 	void Update(InputBase* input, float deltaTime);
 	void Draw();
 
-	void OnCollision() override {}
+	void OnCollision() override { mIsDead = true; }
 
 	bool GetIsDead() const { return mIsDead; }
 
 private:
-	Player* mPlayer;
+	GameScene* mGameScene;
 	Transform mTransform;
 	std::unique_ptr<ModelInstance> mModel;
 	std::unique_ptr<Material> mMaterial;
@@ -31,8 +31,7 @@ private:
 	Course* mCurrCourse;
 	float mCurrT;
 
-	float mSpeed = 1.0f;
+	float mSpeed = -0.1f;
 	float mCourseRot;
-	float mLife = 5.0f;
 	bool mIsDead = false;
 };

@@ -1,15 +1,19 @@
-#include "PlayerBullet.h"
+#include "Enemy.h"
 #include "Course.h"
+#include "GameScene.h"
 #include "graphics/ResourceMgr.h"
 #include "MathUtil.h"
-#include "Player.h"
 
-PlayerBullet::PlayerBullet(Player* player)
-	: mPlayer(player) {
+Enemy::Enemy(GameScene* gameScene)
+	: mGameScene(gameScene) {
 
 }
 
-void PlayerBullet::Initialize() {
+void Enemy::Initialize(Course* course, float t, float rot) {
+	mCurrCourse = course;
+	mCurrT = t;
+	mCourseRot = rot;
+
 	mModel = std::make_unique<ModelInstance>();
 	mModel->Create(ResourceMgr::GetInstance().GetModel("resources/bullet.gltf"));
 	// マテリアル作成
@@ -19,20 +23,10 @@ void PlayerBullet::Initialize() {
 	mModel->SetMaterial(0, mMaterial.get());
 	mModel->SetFlags(PSOFlags::kNormalBlend);// 透過する
 
-	mTransform = mPlayer->GetTransform();
-	mCurrCourse = mPlayer->GetCurrCourse();
-	mCurrT = mPlayer->GetCurrT();
-	mCourseRot = mPlayer->GetCourseRot();
-
 	SetRadius(1.0f);
 }
 
-void PlayerBullet::Update(InputBase*, float deltaTime) {
-	mLife = MathUtil::Max(mLife - deltaTime, 0.0f);
-	if (mLife <= 0.0f) {
-		mIsDead = true;
-	}
-
+void Enemy::Update(InputBase*, float deltaTime) {
 	mCurrT += mSpeed * deltaTime;
 	if (mCurrT > mCurrCourse->GetSectionNum()) {
 		mIsDead = true;
@@ -47,13 +41,13 @@ void PlayerBullet::Update(InputBase*, float deltaTime) {
 	SetCenter(mTransform.mTranslate);
 
 	// 透明度の計算
-	float pt = mPlayer->GetCurrT();
+	float pt = mGameScene->GetPlayer()->GetCurrT();
 	mMaterial->mColor.w = Course::CalcTransparent(pt, mCurrT);
 	mMaterial->Update();
 }
 
-void PlayerBullet::Draw() {
-	if (mMaterial->mColor.w > 0.0f) {
+void Enemy::Draw() {
+	if (mMaterial->mColor.w > 0.0f && !mIsDead) {
 		mModel->Draw(mTransform.GetWorldMat());
 	}
 }

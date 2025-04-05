@@ -48,8 +48,8 @@ void Game::Initialize() {
 	mCRT_PS->Create(init);
 	mCRT_CB = std::make_unique<ConstantBuffer>();
 	mCRT_CB->Create(sizeof(CRT_Constant));
-	mCRT_Constant.mRGBShift.x = 0.0005f;
-	mCRT_Constant.mRGBShift.y = 0.0005f;
+	mCRT_Constant.mRGBShift.x = 0.001f;
+	mCRT_Constant.mRGBShift.y = 0.001f;
 
 	// デフォルトのライト
 	mDirectionalLight = std::make_unique<DirectionalLight>();
@@ -119,8 +119,8 @@ void Game::Draw() {
 	}
 
 	// プリミティブの描画
-	LineRenderer& primitiveRenderer = LineRenderer::GetInstance();
-	primitiveRenderer.Prepare();
+	LineRenderer& lineRenderer = LineRenderer::GetInstance();
+	lineRenderer.Prepare();
 	if (mCurrScene) {
 		mCurrScene->DrawPrimitive();
 	}

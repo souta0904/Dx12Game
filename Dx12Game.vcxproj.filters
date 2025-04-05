@@ -67,6 +67,7 @@
     <ClCompile Include="engine\graphics\RenderTexture.cpp" />
     <ClCompile Include="engine\ImGuiWrapper.cpp" />
     <ClCompile Include="game\PlayerBullet.cpp" />
+    <ClCompile Include="game\Enemy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Helper.h">
@@ -141,6 +142,8 @@
     <ClInclude Include="engine\graphics\Light.h" />
     <ClInclude Include="engine\ImGuiWrapper.h" />
     <ClInclude Include="game\PlayerBullet.h" />
+    <ClInclude Include="game\Enemy.h" />
+    <ClInclude Include="game\CircleCollider.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="engine">

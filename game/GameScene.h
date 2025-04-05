@@ -1,7 +1,8 @@
 #pragma once
 #include "scene/IScene.h"
-#include "Player.h"
 #include "Course.h"
+#include "Enemy.h"
+#include "Player.h"
 #include <memory>
 
 // ゲームプレイ
@@ -26,4 +27,5 @@ private:
 	std::unique_ptr<Course> mCourse1;
 	std::unique_ptr<Course> mCourse2;
 	std::unique_ptr<Player> mPlayer;
+	std::vector<std::unique_ptr<Enemy>> mEnemies;
 };

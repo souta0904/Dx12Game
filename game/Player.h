@@ -21,6 +21,7 @@ public:
 	float GetCurrT() const { return mCurrT; }
 	float GetT2Cam() const { return mT2Cam; }
 	float GetCourseRot() const { return mCourseRot; }
+	const std::vector<std::unique_ptr<PlayerBullet>>& GetBullets() const { return mBullets; }
 
 private:
 	GameScene* mGameScene;

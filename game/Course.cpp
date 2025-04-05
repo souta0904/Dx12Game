@@ -101,7 +101,7 @@ void Course::Create() {
 }
 
 void Course::DrawPrimitive() {
-	LineRenderer& pr = LineRenderer::GetInstance();
+	LineRenderer& lr = LineRenderer::GetInstance();
 	Player* p = mGameScene->GetPlayer();
 	float pt = p->GetCurrT();
 	float t2Cam = p->GetT2Cam();
@@ -121,7 +121,7 @@ void Course::DrawPrimitive() {
 				continue;
 			}
 		}
-		pr.DrawLine3(line.mStart, line.mEnd, Vector4(1.0f, 1.0f, 1.0f, a));
+		lr.DrawLine3(line.mStart, line.mEnd, Vector4(1.0f, 1.0f, 1.0f, a));
 	}
 
 	// 上下左右の線
@@ -135,7 +135,7 @@ void Course::DrawPrimitive() {
 					continue;
 				}
 			}
-			pr.DrawLine3(line.mPosition, mAroundLines[i][j + 1].mPosition, Vector4(1.0f, 1.0f, 1.0f, a));
+			lr.DrawLine3(line.mPosition, mAroundLines[i][j + 1].mPosition, Vector4(1.0f, 1.0f, 1.0f, a));
 		}
 	}
 
@@ -150,9 +150,9 @@ void Course::DrawPrimitive() {
 		}
 		for (uint32_t i = 0; i < circle.mPositions.size(); ++i) {
 			if (i < circle.mPositions.size() - 1) {
-				pr.DrawLine3(circle.mPositions[i], circle.mPositions[i + 1], Vector4(1.0f, 1.0f, 1.0f, a));
+				lr.DrawLine3(circle.mPositions[i], circle.mPositions[i + 1], Vector4(1.0f, 1.0f, 1.0f, a));
 			} else {// 最後
-				pr.DrawLine3(circle.mPositions[i], circle.mPositions[0], Vector4(1.0f, 1.0f, 1.0f, a));
+				lr.DrawLine3(circle.mPositions[i], circle.mPositions[0], Vector4(1.0f, 1.0f, 1.0f, a));
 			}
 		}
 	}
