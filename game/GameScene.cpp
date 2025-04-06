@@ -1,5 +1,6 @@
 #include "GameScene.h"
 #include "Enemy.h"
+#include "MathUtil.h"
 #include "Player.h"
 
 void GameScene::Initialize() {
@@ -32,13 +33,53 @@ void GameScene::Initialize() {
 	player->Initialize();
 	mPlayer = player.get();
 	AddObject(std::move(player));
-	// 敵
-	std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>(this);
-	enemy->Initialize();
-	enemy->SetCurrCourse(mCourse1.get());
-	enemy->SetCoursePos(5.0f);
-	enemy->SetCourseRot(0.0f);
-	AddObject(std::move(enemy));
+
+	// エネミー
+	for (uint32_t i = 0; i < 12; ++i) {
+		std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>(this);
+		enemy->Initialize();
+		enemy->SetHP(5);
+		enemy->SetCurrCourse(mCourse1.get());
+		enemy->SetCoursePos(1.0f);
+		enemy->SetCourseRot(MathUtil::ToRadians(30.0f * i));
+		AddObject(std::move(enemy));
+	}
+	for (uint32_t i = 0; i < 12; ++i) {
+		std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>(this);
+		enemy->Initialize();
+		enemy->SetHP(5);
+		enemy->SetCurrCourse(mCourse1.get());
+		enemy->SetCoursePos(1.5f);
+		enemy->SetCourseRot(MathUtil::ToRadians(30.0f * i));
+		AddObject(std::move(enemy));
+	}
+	for (uint32_t i = 0; i < 12; ++i) {
+		std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>(this);
+		enemy->Initialize();
+		enemy->SetHP(5);
+		enemy->SetCurrCourse(mCourse1.get());
+		enemy->SetCoursePos(2.0f);
+		enemy->SetCourseRot(MathUtil::ToRadians(30.0f * i));
+		AddObject(std::move(enemy));
+	}
+	for (uint32_t i = 0; i < 12; ++i) {
+		std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>(this);
+		enemy->Initialize();
+		enemy->SetHP(5);
+		enemy->SetCurrCourse(mCourse1.get());
+		enemy->SetCoursePos(2.25f);
+		enemy->SetCourseRot(MathUtil::ToRadians(30.0f * i));
+		AddObject(std::move(enemy));
+	}
+	for (uint32_t i = 0; i < 12; ++i) {
+		std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>(this);
+		enemy->Initialize();
+		enemy->SetHP(5);
+		enemy->SetCurrCourse(mCourse1.get());
+		enemy->SetCoursePos(2.5f);
+		enemy->SetCourseRot(MathUtil::ToRadians(30.0f * i));
+		AddObject(std::move(enemy));
+	}
 }
 
 void GameScene::Terminate() {
@@ -59,9 +100,13 @@ void GameScene::Update(InputBase* input, float deltaTime) {
 	// 当たり判定
 	for (uint32_t i = 0; i < mObjects.size(); ++i) {
 		for (uint32_t j = i + 1; j < mObjects.size(); ++j) {
-			if (Collision(mObjects[i].get(), mObjects[j].get())) {
-				mObjects[i]->OnCollision(mObjects[j].get());
-				mObjects[j]->OnCollision(mObjects[i].get());
+			CourseObj* a = mObjects[i].get();
+			CourseObj* b = mObjects[j].get();
+			if (!a->GetIsDead() && !b->GetIsDead()) {
+				if (Collision(a, b)) {
+					a->OnCollision(b);
+					b->OnCollision(a);
+				}
 			}
 		}
 	}

@@ -30,6 +30,7 @@ public:
 	virtual void OnCollision(CourseObj* obj) = 0;
 
 	bool GetIsDead() const { return mIsDead; }
+	int32_t GetHP() const { return mHP; }
 	const Transform& GetTransform() const { return mTransform; }
 	ObjType GetType() const { return mType; }
 	Course* GetCurrCourse() const { return mCurrCourse; }
@@ -37,6 +38,7 @@ public:
 	float GetCourseRot() const { return mCourseRot; }
 	float GetSpeed() const { return mSpeed; }
 	float GetAlpha() const { return mAlpha; }
+	void SetHP(int32_t hp) { mHP = hp; }
 	void SetCurrCourse(Course* course) { mCurrCourse = course; }
 	void SetCoursePos(float coursePos) { mCoursePos = coursePos; }
 	void SetCourseRot(float courseRot) { mCourseRot = courseRot; }
@@ -50,6 +52,7 @@ protected:
 protected:
 	GameScene* mGameScene;
 	Player* mPlayer;
+	int32_t mHP;
 	bool mIsDead = false;
 	Quaternion mLocalRot;
 	Transform mTransform;

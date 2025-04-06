@@ -17,7 +17,7 @@ private:
 	float mRotVel;
 	float mRotSpeed;
 	// カメラへのt
-	float mT2Cam = -0.05f;
+	float mT2Cam = -0.15f;
 	// 弾
 	float mCooldown;
 };

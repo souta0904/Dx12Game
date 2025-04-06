@@ -14,4 +14,7 @@ public:
 private:
 	std::unique_ptr<ModelInstance> mModel;
 	std::unique_ptr<Material> mMaterial;
+	Vector4 mNormalCol;
+	Vector4 mDamageCol;
+	float mDamageColTime;
 };

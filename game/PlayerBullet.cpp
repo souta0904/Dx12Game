@@ -22,13 +22,15 @@ void PlayerBullet::Initialize() {
 	mModel->SetMaterial(0, mMaterial.get());
 	mModel->SetFlags(PSOFlags::kNormalBlend);
 
+	mHP = 1;
 	mTransform = mPlayer->GetTransform();
+	mTransform.mScale = Vector3(0.75f, 0.75f, 0.75f);
 	mType = ObjType::kPBullet;
 	mCurrCourse = mPlayer->GetCurrCourse();
 	mCoursePos = mPlayer->GetCoursePos();
 	mCourseRot = mPlayer->GetCourseRot();
 	mSpeed = 1.0f;
-	SetRadius(1.0f);
+	SetRadius(0.75f);
 }
 
 void PlayerBullet::Update(InputBase*, float deltaTime) {
@@ -50,6 +52,9 @@ void PlayerBullet::Draw() {
 
 void PlayerBullet::OnCollision(CourseObj* obj) {
 	if (obj->GetType() != ObjType::kPlayer) {
-		mIsDead = true;
+		--mHP;
+		if (mHP <= 0) {
+			mIsDead = true;
+		}
 	}
 }

@@ -13,7 +13,8 @@ void Enemy::Initialize() {
 	mModel->Create(ResourceMgr::GetInstance().GetModel("resources/player.gltf"));
 	// マテリアル
 	mMaterial = std::make_unique<Material>();
-	mMaterial->mColor = mModel->GetModel()->GetMaterial(0)->mColor;
+	mNormalCol = mModel->GetModel()->GetMaterial(0)->mColor;
+	mMaterial->mColor = mNormalCol;
 	mMaterial->Create();
 	mModel->SetMaterial(0, mMaterial.get());
 	mModel->SetFlags(PSOFlags::kNormalBlend);
@@ -22,10 +23,18 @@ void Enemy::Initialize() {
 	mType = ObjType::kEnemy;
 	mSpeed = -0.1f;
 	SetRadius(1.0f);
+
+	mDamageCol = Vector4(1.0f, 1.0f, 0.0f, 1.0f);
 }
 
 void Enemy::Update(InputBase*, float deltaTime) {
 	Move(deltaTime);
+
+	if (mDamageColTime <= 0.0f) {
+		mMaterial->mColor = mNormalCol;
+	} else {
+		mDamageColTime = MathUtil::Max(mDamageColTime - deltaTime, 0.0f);
+	}
 	// マテリアル
 	mMaterial->mColor.w = mAlpha;
 	mMaterial->Update();
@@ -39,6 +48,10 @@ void Enemy::Draw() {
 
 void Enemy::OnCollision(CourseObj* obj) {
 	if (obj->GetType() == ObjType::kPBullet) {
-		mIsDead = true;
+		--mHP;
+		if (mHP <= 0) {
+			mIsDead = true;
+		}
+		mMaterial->mColor = mDamageCol;
 	}
 }

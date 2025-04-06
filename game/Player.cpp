@@ -3,7 +3,9 @@
 #include "GameScene.h"
 #include "graphics/ModelBase.h"
 #include "graphics/ResourceMgr.h"
+#include "ImGuiWrapper.h"
 #include "input/InputBase.h"
+#include <format>
 
 Player::Player(GameScene* gameScene)
 	: CourseObj(gameScene) {
@@ -25,7 +27,7 @@ void Player::Initialize() {
 	mCurrCourse = mGameScene->GetCurrCourse();
 	mCoursePos = 0.0f;
 	mCourseRot = -MathUtil::kPiOver2;
-	mSpeed = 0.3f;
+	mSpeed = 0.1f;
 
 	mRotVel = 0.0f;
 	mRotSpeed = MathUtil::kPiOver2;
@@ -48,15 +50,18 @@ void Player::Update(InputBase* input, float deltaTime) {
 		mRotVel += mRotSpeed;
 	}
 	// 弾
-	mCooldown = MathUtil::Max(mCooldown - deltaTime, 0.0f);
+	//mCooldown = MathUtil::Max(mCooldown - deltaTime, 0.0f);
+	mCooldown -= deltaTime;
 	if (input->GetKey(DIK_SPACE) && mCooldown <= 0.0f) {
 		std::unique_ptr<PlayerBullet> bullet = std::make_unique<PlayerBullet>(mGameScene);
 		bullet->Initialize();
 		mGameScene->AddObject(std::move(bullet));
-		mCooldown = 0.05f;
+		static const float kInitCooldown = 0.05f;
+		mCooldown = kInitCooldown;
 	}
 
-	mCoursePos += mSpeed * deltaTime;
+	float addSpeed = mSpeed * deltaTime;
+	mCoursePos += addSpeed;
 	float sectionNum = static_cast<float>(mCurrCourse->GetSectionNum());
 	if (mCoursePos > sectionNum) {
 		mCoursePos = sectionNum;
@@ -73,8 +78,15 @@ void Player::Update(InputBase* input, float deltaTime) {
 	float cameraT = mCoursePos + mT2Cam;
 	Course::CenterInfo centerInfo = mCurrCourse->GetCenterInfo(cameraT);
 	ModelCamera* camera = ModelBase::GetInstance().GetDefaultCamera();
-	camera->mTranslate = MathUtil::Lerp(camera->mTranslate, centerInfo.mPosition, 0.05f);
-	camera->mRotate = Slerp(camera->mRotate, centerInfo.mRotate, 0.05f);
+	//camera->mTranslate = MathUtil::Lerp(camera->mTranslate, centerInfo.mPosition, 0.05f);// ガタガタする
+	camera->mTranslate = centerInfo.mPosition;
+	camera->mRotate = Slerp(camera->mRotate, centerInfo.mRotate, 0.1f);
+
+	ImGui::Begin("Player");
+	ImGui::Text(std::format("Add speed: {}", addSpeed).c_str());
+	ImGui::Text(std::format("Player t: {}", mCoursePos).c_str());
+	ImGui::Text(std::format("Camera t: {}", cameraT).c_str());
+	ImGui::End();
 }
 
 void Player::Draw() {
