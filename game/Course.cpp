@@ -77,7 +77,7 @@ void Course::Create() {
 	}
 
 	// 円
-	static const uint32_t kPointNum = 32;// 円を作る点の数
+	static const uint32_t kPointNum = 64;// 円を作る点の数
 	for (uint32_t section = 0; section < mSectionNum; ++section) {
 		for (uint32_t i = 0; i < mCircleNum; ++i) {
 			Circle circle;

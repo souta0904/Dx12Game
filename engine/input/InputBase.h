@@ -41,7 +41,7 @@ public:
 
 private:
 	// スティックを正規化(-1.0から1.0)
-	Vector2 NormalizeStick(uint16_t inputX, uint16_t inputY, float deadZone);
+	Vector2 NormalizeStick(int16_t inputX, int16_t inputY, float deadZone);
 	// トリガーを正規化(0.0から1.0)
 	float NormalizeTrigger(uint8_t input, float deadZone);
 

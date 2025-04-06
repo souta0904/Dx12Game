@@ -47,11 +47,14 @@ void Enemy::Draw() {
 }
 
 void Enemy::OnCollision(CourseObj* obj) {
-	if (obj->GetType() == ObjType::kPBullet) {
-		--mHP;
-		if (mHP <= 0) {
-			mIsDead = true;
+	if (mAlpha > 0.0f) {
+		if (obj->GetType() == ObjType::kPBullet) {
+			--mHP;
+			if (mHP <= 0) {
+				mIsDead = true;
+			}
+			mMaterial->mColor = mDamageCol;
+			mDamageColTime = 0.01f;
 		}
-		mMaterial->mColor = mDamageCol;
 	}
 }

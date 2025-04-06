@@ -55,7 +55,7 @@ void Game::Initialize() {
 	mDirectionalLight = std::make_unique<DirectionalLight>();
 	mDirectionalLight->mColor = Vector3(1.0f, 1.0f, 1.0f);
 	mDirectionalLight->mIntensity = 1.0f;
-	mDirectionalLight->mDirection = Normalize(Vector3(0.0f, -1.0f, 0.0f));
+	mDirectionalLight->mDirection = Normalize(Vector3(0.6f, -1.0f, 0.8f));
 	mModelBase->AddDirectionalLight(mDirectionalLight.get());
 
 	// 最初のシーン

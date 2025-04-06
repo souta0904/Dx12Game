@@ -51,10 +51,12 @@ void PlayerBullet::Draw() {
 }
 
 void PlayerBullet::OnCollision(CourseObj* obj) {
-	if (obj->GetType() != ObjType::kPlayer) {
-		--mHP;
-		if (mHP <= 0) {
-			mIsDead = true;
+	if (mAlpha > 0.0f) {
+		if (obj->GetType() != ObjType::kPlayer) {
+			--mHP;
+			if (mHP <= 0) {
+				mIsDead = true;
+			}
 		}
 	}
 }

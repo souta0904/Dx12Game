@@ -69,6 +69,7 @@
     <ClCompile Include="game\PlayerBullet.cpp" />
     <ClCompile Include="game\Enemy.cpp" />
     <ClCompile Include="game\CourseObj.cpp" />
+    <ClCompile Include="game\Building.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Helper.h">
@@ -146,6 +147,7 @@
     <ClInclude Include="game\Enemy.h" />
     <ClInclude Include="game\CircleCollider.h" />
     <ClInclude Include="game\CourseObj.h" />
+    <ClInclude Include="game\Building.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="engine">

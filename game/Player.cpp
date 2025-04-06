@@ -25,7 +25,7 @@ void Player::Initialize() {
 
 	mType = ObjType::kPlayer;
 	mCurrCourse = mGameScene->GetCurrCourse();
-	mCoursePos = 0.0f;
+	mCoursePos = -mT2Cam;
 	mCourseRot = -MathUtil::kPiOver2;
 	mSpeed = 0.1f;
 
@@ -37,22 +37,23 @@ void Player::Initialize() {
 	ModelCamera* camera = ModelBase::GetInstance().GetDefaultCamera();
 	camera->mTranslate = centerInfo.mPosition;
 	camera->mRotate = centerInfo.mRotate;
-	camera->mFovY = MathUtil::kPiOver180 * 60.0f;// 60度
+	camera->mFovY = MathUtil::kPiOver180 * 50.0f;// 60度
 }
 
 void Player::Update(InputBase* input, float deltaTime) {
 	// 回転
 	mRotVel = 0.0f;
-	if (input->GetKey(DIK_A)) {
+	Vector2 ls = input->GetLeftStick();
+	if (input->GetKey(DIK_A) || ls.x <= -0.5f) {
 		mRotVel -= mRotSpeed;
 	}
-	if (input->GetKey(DIK_D)) {
+	if (input->GetKey(DIK_D) || ls.x >= 0.5f) {
 		mRotVel += mRotSpeed;
 	}
 	// 弾
 	//mCooldown = MathUtil::Max(mCooldown - deltaTime, 0.0f);
 	mCooldown -= deltaTime;
-	if (input->GetKey(DIK_SPACE) && mCooldown <= 0.0f) {
+	if ((input->GetKey(DIK_SPACE) || input->GetPadButton(XINPUT_GAMEPAD_A)) && mCooldown <= 0.0f) {
 		std::unique_ptr<PlayerBullet> bullet = std::make_unique<PlayerBullet>(mGameScene);
 		bullet->Initialize();
 		mGameScene->AddObject(std::move(bullet));

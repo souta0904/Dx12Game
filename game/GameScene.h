@@ -1,5 +1,6 @@
 #pragma once
 #include "scene/IScene.h"
+#include "Building.h"
 #include "Course.h"
 #include "CourseObj.h"
 #include <memory>
@@ -25,6 +26,10 @@ public:
 	Player* GetPlayer() const { return mPlayer; }
 
 private:
+	void Load();
+	void Unload();
+
+private:
 	std::unique_ptr<Course> mCourse1;
 	std::unique_ptr<Course> mCourse2;
 	Course* mCurrCourse;
@@ -32,4 +37,5 @@ private:
 	std::vector<std::unique_ptr<CourseObj>> mObjects;
 	std::vector<std::unique_ptr<CourseObj>> mWaitObjs;
 	Player* mPlayer;
+	std::vector<std::unique_ptr<Building>> mBuildings;
 };

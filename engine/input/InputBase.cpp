@@ -85,7 +85,7 @@ void InputBase::Update() {
 }
 
 // スティックを正規化
-Vector2 InputBase::NormalizeStick(uint16_t inputX, uint16_t inputY, float deadZone) {
+Vector2 InputBase::NormalizeStick(int16_t inputX, int16_t inputY, float deadZone) {
 	const float kMax = 32767.0f;
 	float len = std::sqrtf(static_cast<float>(inputX * inputX + inputY * inputY));
 	Vector2 normalizedStick;
