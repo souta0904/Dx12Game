@@ -5,6 +5,7 @@
 
 class GameScene;
 class InputBase;
+class Player;
 class Course;
 
 // 種類
@@ -21,7 +22,7 @@ enum class ObjType {
 // コース上のオブジェクト
 class CourseObj : public CircleCollider {
 public:
-	CourseObj(GameScene* gameScene) : mGameScene(gameScene) {}
+	CourseObj(GameScene* gameScene);
 	virtual ~CourseObj() {}
 	virtual void Initialize() = 0;
 	virtual void Update(InputBase* input, float deltaTime) = 0;
@@ -32,19 +33,31 @@ public:
 	const Transform& GetTransform() const { return mTransform; }
 	ObjType GetType() const { return mType; }
 	Course* GetCurrCourse() const { return mCurrCourse; }
-	float GetCurrT() const { return mCurrT; }
+	float GetCoursePos() const { return mCoursePos; }
 	float GetCourseRot() const { return mCourseRot; }
+	float GetSpeed() const { return mSpeed; }
+	float GetAlpha() const { return mAlpha; }
 	void SetCurrCourse(Course* course) { mCurrCourse = course; }
-	void SetCurrT(float t) { mCurrT = t; }
+	void SetCoursePos(float coursePos) { mCoursePos = coursePos; }
 	void SetCourseRot(float courseRot) { mCourseRot = courseRot; }
+	void SetSpeed(float speed) { mSpeed = speed; }
+	void SetAlpha(float alpha) { mAlpha = alpha; }
+
+protected:
+	// 更新(プレイヤー以外)
+	void Move(float deltaTime);
 
 protected:
 	GameScene* mGameScene;
+	Player* mPlayer;
 	bool mIsDead = false;
+	Quaternion mLocalRot;
 	Transform mTransform;
 	ObjType mType = ObjType::kNone;
 	// コース
 	Course* mCurrCourse;
-	float mCurrT;
+	float mCoursePos;
 	float mCourseRot;
+	float mSpeed;
+	float mAlpha;// 透過
 };

@@ -100,6 +100,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="game\CourseObj.cpp" />
     <ClCompile Include="game\Enemy.cpp" />
     <ClCompile Include="game\Course.cpp" />
     <ClCompile Include="engine\directX\Buffer.cpp" />

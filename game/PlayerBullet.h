@@ -12,9 +12,7 @@ public:
 	void Draw() override;
 	void OnCollision(CourseObj* obj) override;
 private:
-	Player* mPlayer;
 	std::unique_ptr<ModelInstance> mModel;
 	std::unique_ptr<Material> mMaterial;
-	float mSpeed = 1.0f;
 	float mLife = 5.0f;
 };

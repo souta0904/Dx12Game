@@ -36,7 +36,7 @@ void GameScene::Initialize() {
 	std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>(this);
 	enemy->Initialize();
 	enemy->SetCurrCourse(mCourse1.get());
-	enemy->SetCurrT(5.0f);
+	enemy->SetCoursePos(5.0f);
 	enemy->SetCourseRot(0.0f);
 	AddObject(std::move(enemy));
 }

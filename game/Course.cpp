@@ -103,7 +103,7 @@ void Course::Create() {
 void Course::DrawPrimitive() {
 	LineRenderer& lr = LineRenderer::GetInstance();
 	Player* p = mGameScene->GetPlayer();
-	float pt = p->GetCurrT();
+	float pt = p->GetCoursePos();
 	float t2Cam = p->GetT2Cam();
 	// 透過フラグ
 	bool useTransparent = true;

@@ -14,7 +14,6 @@ public:
 private:
 	std::unique_ptr<ModelInstance> mModel;
 	float mHP;
-	float mTSpeed;
 	float mRotVel;
 	float mRotSpeed;
 	// カメラへのt

@@ -68,6 +68,7 @@
     <ClCompile Include="engine\ImGuiWrapper.cpp" />
     <ClCompile Include="game\PlayerBullet.cpp" />
     <ClCompile Include="game\Enemy.cpp" />
+    <ClCompile Include="game\CourseObj.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Helper.h">
