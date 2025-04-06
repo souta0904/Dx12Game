@@ -47,29 +47,75 @@
     <ClCompile Include="engine\input\InputBase.cpp">
       <Filter>engine\input</Filter>
     </ClCompile>
-    <ClCompile Include="engine\graphics\Texture.cpp" />
-    <ClCompile Include="engine\graphics\ResourceMgr.cpp" />
-    <ClCompile Include="engine\graphics\SpriteBase.cpp" />
-    <ClCompile Include="engine\directX\PipelineState.cpp" />
-    <ClCompile Include="engine\graphics\Camera.cpp" />
-    <ClCompile Include="engine\graphics\Sprite.cpp" />
-    <ClCompile Include="engine\directX\Buffer.cpp" />
-    <ClCompile Include="engine\graphics\ModelBase.cpp" />
-    <ClCompile Include="engine\graphics\ModelCamera.cpp" />
-    <ClCompile Include="engine\graphics\Model.cpp" />
-    <ClCompile Include="engine\Window.cpp" />
-    <ClCompile Include="game\Game.cpp" />
-    <ClCompile Include="game\GameScene.cpp" />
-    <ClCompile Include="engine\graphics\LineRenderer.cpp" />
-    <ClCompile Include="game\Course.cpp" />
-    <ClCompile Include="game\Player.cpp" />
-    <ClCompile Include="math\Transform.cpp" />
-    <ClCompile Include="engine\graphics\RenderTexture.cpp" />
-    <ClCompile Include="engine\ImGuiWrapper.cpp" />
-    <ClCompile Include="game\PlayerBullet.cpp" />
-    <ClCompile Include="game\Enemy.cpp" />
-    <ClCompile Include="game\CourseObj.cpp" />
-    <ClCompile Include="game\Building.cpp" />
+    <ClCompile Include="engine\directX\Buffer.cpp">
+      <Filter>engine\directX</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\directX\PipelineState.cpp">
+      <Filter>engine\directX</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\graphics\RenderTexture.cpp">
+      <Filter>engine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\graphics\Camera.cpp">
+      <Filter>engine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\graphics\LineRenderer.cpp">
+      <Filter>engine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\graphics\Model.cpp">
+      <Filter>engine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\graphics\ModelBase.cpp">
+      <Filter>engine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\graphics\ModelCamera.cpp">
+      <Filter>engine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\graphics\Sprite.cpp">
+      <Filter>engine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\graphics\SpriteBase.cpp">
+      <Filter>engine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\graphics\Texture.cpp">
+      <Filter>engine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\ImGuiWrapper.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\Window.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Transform.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="game\Building.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="game\Course.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="game\CourseObj.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="game\Enemy.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="game\Game.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="game\GameScene.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="game\Player.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="game\PlayerBullet.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\graphics\ResourceMgr.cpp">
+      <Filter>engine\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Helper.h">
@@ -120,34 +166,90 @@
     <ClInclude Include="engine\input\InputBase.h">
       <Filter>engine\input</Filter>
     </ClInclude>
-    <ClInclude Include="engine\graphics\Texture.h" />
-    <ClInclude Include="engine\graphics\ResourceMgr.h" />
-    <ClInclude Include="engine\graphics\SpriteBase.h" />
-    <ClInclude Include="engine\directX\PipelineState.h" />
-    <ClInclude Include="engine\graphics\Camera.h" />
-    <ClInclude Include="engine\graphics\BlendMode.h" />
-    <ClInclude Include="engine\graphics\Sprite.h" />
-    <ClInclude Include="engine\directX\Buffer.h" />
-    <ClInclude Include="engine\graphics\ModelBase.h" />
-    <ClInclude Include="engine\graphics\ModelCamera.h" />
-    <ClInclude Include="engine\graphics\PSOFlags.h" />
-    <ClInclude Include="engine\graphics\Model.h" />
-    <ClInclude Include="engine\Window.h" />
-    <ClInclude Include="game\Game.h" />
-    <ClInclude Include="engine\scene\IScene.h" />
-    <ClInclude Include="game\GameScene.h" />
-    <ClInclude Include="engine\graphics\LineRenderer.h" />
-    <ClInclude Include="game\Course.h" />
-    <ClInclude Include="game\Player.h" />
-    <ClInclude Include="math\Transform.h" />
-    <ClInclude Include="engine\graphics\RenderTexture.h" />
-    <ClInclude Include="engine\graphics\Light.h" />
-    <ClInclude Include="engine\ImGuiWrapper.h" />
-    <ClInclude Include="game\PlayerBullet.h" />
-    <ClInclude Include="game\Enemy.h" />
-    <ClInclude Include="game\CircleCollider.h" />
-    <ClInclude Include="game\CourseObj.h" />
-    <ClInclude Include="game\Building.h" />
+    <ClInclude Include="engine\directX\Buffer.h">
+      <Filter>engine\directX</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\directX\PipelineState.h">
+      <Filter>engine\directX</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\RenderTexture.h">
+      <Filter>engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\BlendMode.h">
+      <Filter>engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\Camera.h">
+      <Filter>engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\Light.h">
+      <Filter>engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\LineRenderer.h">
+      <Filter>engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\Model.h">
+      <Filter>engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\ModelBase.h">
+      <Filter>engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\ModelCamera.h">
+      <Filter>engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\PSOFlags.h">
+      <Filter>engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\Sprite.h">
+      <Filter>engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\SpriteBase.h">
+      <Filter>engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\Texture.h">
+      <Filter>engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\ImGuiWrapper.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Window.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Transform.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="game\Building.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="game\CircleCollider.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="game\Course.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="game\CourseObj.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="game\Enemy.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="game\Game.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="game\GameScene.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="game\Player.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="game\PlayerBullet.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\ResourceMgr.h">
+      <Filter>engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\scene\IScene.h">
+      <Filter>engine\scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="engine">
@@ -162,24 +264,66 @@
     <Filter Include="engine\input">
       <UniqueIdentifier>{39279560-d03b-4318-8aea-6df82c156ced}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shader">
+      <UniqueIdentifier>{9fb62d5e-bcfb-4e5f-90b4-95e44965b204}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\graphics">
+      <UniqueIdentifier>{3849d478-2c2b-4f3e-82bc-495ce87ddff4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game">
+      <UniqueIdentifier>{b66f7264-7ba4-41ed-ab9e-8287ce2a5e44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\scene">
+      <UniqueIdentifier>{b632900a-8cad-4566-a4a3-b16f3a153e10}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="resources\shaders\Sprite.hlsli" />
-    <None Include="resources\shaders\Model.hlsli" />
-    <None Include="resources\shaders\Primitive.hlsli" />
-    <None Include="resources\shaders\CopyImage.hlsli" />
+    <None Include="resources\shaders\CopyImage.hlsli">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="resources\shaders\Model.hlsli">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="resources\shaders\Primitive.hlsli">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="resources\shaders\Sprite.hlsli">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="resources\shaders\SpriteVS.hlsl" />
-    <FxCompile Include="resources\shaders\SpritePS.hlsl" />
-    <FxCompile Include="resources\shaders\ModelVS.hlsl" />
-    <FxCompile Include="resources\shaders\ModelPS.hlsl" />
-    <FxCompile Include="resources\shaders\SkinModelVS.hlsl" />
-    <FxCompile Include="resources\shaders\NoTextureModelPS.hlsl" />
-    <FxCompile Include="resources\shaders\PrimitiveVS.hlsl" />
-    <FxCompile Include="resources\shaders\PrimitivePS.hlsl" />
-    <FxCompile Include="resources\shaders\CopyImageVS.hlsl" />
-    <FxCompile Include="resources\shaders\CopyImagePS.hlsl" />
-    <FxCompile Include="resources\shaders\CathodeRayTubePS.hlsl" />
+    <FxCompile Include="resources\shaders\CathodeRayTubePS.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\CopyImagePS.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\CopyImageVS.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\ModelPS.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\ModelVS.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\NoTextureModelPS.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\PrimitivePS.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\PrimitiveVS.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\SkinModelVS.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\SpritePS.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\SpriteVS.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

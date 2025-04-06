@@ -36,12 +36,12 @@ private:
 		float mTime;					// 時間
 		float mZoom = 0.93f;			// 拡大縮小
 		float mDistortion = 0.1f;		// 歪み
-		float mNoise = 0.02f;			// ノイズ
+		float mNoise = 0.015f;			// ノイズ
 		float mNoiseScaleX = 100.0f;	// ノイズスケールX
 		float mNoiseScaleY = 800.0f;	// ノイズスケールY
 		float mNoiseSpeed = 15.0f;		// ノイズの速さ
 		float mPad1;
-		Vector2 mRGBShift;				// RGBずらし
+		Vector2 mRGBShift = Vector2(0.0013f, 0.0013f);// RGBずらし
 		float mPad[2];
 	};
 	CRT_Constant mCRT_Constant;

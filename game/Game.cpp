@@ -48,8 +48,6 @@ void Game::Initialize() {
 	mCRT_PS->Create(init);
 	mCRT_CB = std::make_unique<ConstantBuffer>();
 	mCRT_CB->Create(sizeof(CRT_Constant));
-	mCRT_Constant.mRGBShift.x = 0.001f;
-	mCRT_Constant.mRGBShift.y = 0.001f;
 
 	// デフォルトのライト
 	mDirectionalLight = std::make_unique<DirectionalLight>();
@@ -87,6 +85,9 @@ void Game::Update() {
 	mCRT_Constant.mTime += mDeltaTime;
 	ImGui::Begin("Post effect");
 	ImGui::Checkbox("Use", &mUsePE);
+	if (ImGui::Button("Reset")) {
+		mCRT_Constant = CRT_Constant();
+	}
 	ImGui::DragFloat("Zoom", &mCRT_Constant.mZoom, 0.001f);
 	ImGui::DragFloat("Distortion", &mCRT_Constant.mDistortion, 0.001f);
 	ImGui::DragFloat("Noise", &mCRT_Constant.mNoise, 0.001f);
